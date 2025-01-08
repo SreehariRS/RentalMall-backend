@@ -1,0 +1,36 @@
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:23:02.795Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:23:02 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:23:02.803Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:26:25.337Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:26:25 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:26:25.339Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:26:49.774Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:26:49 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:26:49.776Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:29:18.440Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:29:18 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\"","timestamp":"2025-01-02T17:29:18.441Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:29:52.347Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:29:52 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:29:52.348Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:29:53.845Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:29:53 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:29:53.847Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:40.815Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:40 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:40.816Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:40.829Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:40 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:40.830Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:47.743Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:47 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:47.744Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:47.757Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:47 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:47.759Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:51.556Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:51 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:51.558Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:51.579Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:51 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:51.581Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:54.516Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:54 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:54.518Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:32:54.543Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:32:54 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:32:54.544Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:33:02.609Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:33:02 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:33:02.610Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:33:09.589Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:33:09 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:33:09.590Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:33:09.599Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:33:09 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:33:09.601Z"}
+{"level":"info","message":"GET /api/favorites","timestamp":"2025-01-02T17:33:13.133Z"}
+{"level":"info","message":"::1 - - [02/Jan/2025:17:33:13 +0000] \"GET /api/favorites HTTP/1.1\" 404 152 \"-\" \"axios/1.7.9\"","timestamp":"2025-01-02T17:33:13.134Z"}

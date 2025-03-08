@@ -1,5 +1,5 @@
 import adminRouter from './routes/adminRoutes';
-import userRouter from "./routes/usereRouts"
+import userRouter from "./routes/userRoutes"
 import logger from './middleware/logger';
 
 import express, { Application } from 'express';

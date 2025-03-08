@@ -7,7 +7,7 @@ declare global {
         email:string;
         role:string;
         id:string
-      };  // or you can use a more complex type for user, if needed
+      };  
     }
   }
 }

@@ -1,18 +1,14 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
-}
+  datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+  }
 
-// user
+  // user
 
 model User {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
@@ -21,94 +17,185 @@ model User {
   emailVerified  DateTime?
   image          String?
   hashedPassword String?
-  phone          String?  // Add phone field to the schema
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   favoriteIds    String[]  @db.ObjectId
   isBlocked      Boolean   @default(false)
-  role           String    @default("user") 
-
+    isRestricted   Boolean   @default(false)
+    about         String? 
   accounts       Account[]
   listings       Listing[]
   reservations   Reservation[]
+
+    Notification Notification[]
+
+    CancelledReservation CancelledReservation[]
+        conversationIds    String[]  @db.ObjectId
+    conversations Conversation[] @relation(fields:[conversationIds], references: [id])
+    seenMessageId      String[]  @db.ObjectId
+    seenMessages  Message[]  @relation("Seen",fields:[seenMessageId], references: [id])
+    messages Message[]
+     reviews     Review[]
+      wallet         Wallet?  
+     walletId       String?   @db.ObjectId
+}
+
+model Conversation{
+    id               String    @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt        DateTime  @default(now())
+    lastMessageAt    DateTime  @default(now())
+    name             String?
+    isGroup          Boolean?
+    messagesId       String[]  @db.ObjectId
+    messages         Message[]
+    userIds          String[]    @db.ObjectId
+    users            User[] @relation(fields: [userIds], references: [id])
+}
+
+model Message{
+   id               String    @id @default(auto()) @map("_id") @db.ObjectId
+   body             String?
+   image            String?
+   createdAt        DateTime  @default(now())
+   seenIds          String[]  @db.ObjectId
+   seen             User[]  @relation("Seen",fields:[seenIds], references: [id])
+   conversationId   String  @db.ObjectId
+   conversation     Conversation  @relation(fields:[conversationId], references: [id], onDelete: Cascade)
+
+   senderId         String  @db.ObjectId
+   sender           User  @relation(fields:[senderId], references: [id], onDelete: Cascade)
+
 }
 
 
 
-// email verification
+  // email verification
 
-model VerificationToken{
-    id             String    @id @default(auto()) @map("_id") @db.ObjectId
-    email  String
-    token String
-    expires DateTime
+  model VerificationToken{
+      id             String    @id @default(auto()) @map("_id") @db.ObjectId
+      email  String
+      token String
+      expires DateTime
 
-    @@unique([email,token])
+      @@unique([email,token])
+  
+  }
+
+  // account
+
+  model Account {
+    id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+    userId             String  @db.ObjectId
+    type               String
+    provider           String
+    providerAccountId  String
+    refresh_token      String? @db.String
+    access_token       String? @db.String
+    expires_at         Int?
+    token_type         String?
+    scope              String?
+    id_token           String? @db.String
+    session_state      String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+  }
+
+  // listing
+
+  model Listing {
+    id              String        @id @default(auto()) @map("_id") @db.ObjectId
+    title           String
+    description     String
+    imageSrc        String[]
+    createdAt       DateTime      @default(now())
+    category        String
+    roomCount       Int
+    guestCount      Int
+    locationValues  String
+    userId          String        @db.ObjectId
+    price           Int
+    offerPrice      Int?
+    user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+    reservations    Reservation[]
+      reviews     Review[]
+  CancelledReservation CancelledReservation[]
+  }
+
+  // reservation
+
+  model Reservation {
+    id          String      @id @default(auto()) @map("_id") @db.ObjectId
+    userId      String      @db.ObjectId
+    listingId   String      @db.ObjectId
+    startDate   DateTime
+    endDate     DateTime
+    status    String 
+    totalPrice  Int
+    createdAt   DateTime    @default(now())
+    reviews     Review[]
+    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    listing     Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  }
+
+model CancelledReservation {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  reservationId String    @db.ObjectId
+  userId        String    @db.ObjectId
+  listingId     String    @db.ObjectId
+  startDate     DateTime
+  endDate       DateTime
+  totalPrice    Int
+  cancelledAt   DateTime  @default(now())
+  cancelledBy   String    @db.ObjectId
+  reason        String?
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing       Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+model Wallet {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String    @unique @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance    Float     @default(0.0) 
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+model Review {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  listingId   String   @db.ObjectId
+  reservationId String?   @db.ObjectId
+  rating      Int      @default(0) 
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  helpfulCount Int     @default(0)
+  verified    Boolean  @default(false)
+  reservation   Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  message   String
+  type      String
+  createdAt DateTime @default(now())
+  isRead    Boolean  @default(false)
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+  // admin
+
+  model Admin {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    email          String   @unique
+    password       String
+    role           String   @default("admin") // Example: "admin", "superadmin"
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+  }
  
-}
-
-// account
-
-model Account {
-  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String  @db.ObjectId
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String? @db.String
-  access_token       String? @db.String
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.String
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-// listing
-
-model Listing {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  title           String
-  description     String
-  imageSrc        String
-  createdAt       DateTime      @default(now())
-  category        String
-  roomCount       Int
-  guestCount      Int
-  locationValues  String
-  userId          String        @db.ObjectId
-  price           Int
-
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reservations    Reservation[]
-}
-
-// reservation
-
-model Reservation {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String      @db.ObjectId
-  listingId   String      @db.ObjectId
-  startDate   DateTime
-  endDate     DateTime
-  totalPrice  Int
-  createdAt   DateTime    @default(now())
-
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing     Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
-}
-
-// admin
-
-model Admin {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  email          String   @unique
-  password       String
-  role           String   @default("admin") // Example: "admin", "superadmin"
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}

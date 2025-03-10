@@ -1,13 +1,13 @@
 FROM node:alpine3.18
 WORKDIR /app
 
-# Copy package files first for caching
+# Copy package.json and package-lock.json first for caching
 COPY package.json package-lock.json ./
 
-# Install dependencies and install nodemon globally
-RUN npm install && npm install -g nodemon
+# Install dependencies including ts-node and nodemon
+RUN npm install && npm install -g nodemon ts-node typescript
 
-# Copy the rest of the files
+# Copy the rest of the application files
 COPY . .
 
 # Expose the port

@@ -1,15 +1,15 @@
-import adminRouter from './routes/adminRoutes';
-import userRouter from "./routes/userRoutes"
-import logger from './middleware/logger';
-
 import express, { Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import http from "http";
+import http from 'http';
+import adminRouter from './routes/adminRoutes';
+import userRouter from './routes/userRoutes';
+import logger from './middleware/logger';
 
 dotenv.config();
+
 const app: Application = express();
 const server = http.createServer(app);
 
@@ -29,9 +29,15 @@ app.use(morgan('combined', {
   },
 }));
 
+// ✅ Default route for health check
+app.get("/", (req, res) => {
+  res.status(200).send("RentalMall Backend is Running 🚀");
+});
+
 // Routes
-app.use('/api/admin', adminRouter); 
-app.use('/api',userRouter)
+app.use('/api/admin', adminRouter);
+app.use('/api', userRouter);
+
 app.use((req, res, next) => {
   logger.info(`${req.method} ${req.url}`);
   next();

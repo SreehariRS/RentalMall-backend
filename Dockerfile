@@ -7,16 +7,17 @@ WORKDIR /app
 # Copy package files first (for better caching)
 COPY package.json package-lock.json ./
 
-# Install only production dependencies
-RUN npm install --only=production && npm install -g nodemon ts-node typescript
+# Install all dependencies (including dev dependencies)
+RUN npm install && npm install -g nodemon ts-node typescript
+
+# Install missing TypeScript type definitions
+RUN npm install --save-dev @types/cors @types/morgan @types/cookie-parser
 
 # Copy Prisma schema before running `prisma generate`
 COPY prisma ./prisma
-
-# Generate Prisma client
 RUN npx prisma generate
 
-# Copy the rest of the application files, including .env
+# Copy the entire project
 COPY . .
 
 # Expose application port

@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Install dependencies including ts-node and nodemon
-RUN npm install && npm install -g nodemon ts-node typescript
+RUN npm install && npm install -g nodemon ts-node typescript && npx prisma generate
 
 # Copy the rest of the application files
 COPY . .

@@ -18,7 +18,7 @@ jobs:
       
       - name: Build Docker image
         run: docker build -t sreeharirs/rentalmall .
-
+      
       - name: Publish image to Docker Hub
         run: docker push sreeharirs/rentalmall:latest
   
@@ -35,10 +35,6 @@ jobs:
           docker rm rentalmall-container || true
         continue-on-error: true 
         
+        
       - name: Run Docker container
-        run: |
-          docker run -d -p 5000:5000 \
-            --name rentalmall-container \
-            --restart unless-stopped \
-            -e PRISMA_PASSWORD="${{ secrets.PRISMA_PASSWORD }}" \
-            sreeharirs/rentalmall
+        run: docker run -d -p 5000:5000 --name rentalmall-container -e PRISMA_PASSWORD='${{ secrets.PRISMA_PASSWORD }}' sreeharirs/rentalmall

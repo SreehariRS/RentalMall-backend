@@ -5,7 +5,7 @@ FROM node:alpine3.18
 WORKDIR /app
 
 # Copy package.json and install dependencies
-COPY package.json package-lock.json ./
+COPY package.json  ./
 RUN npm install -g nodemon && npm install --only=production
 
 # Copy remaining application files

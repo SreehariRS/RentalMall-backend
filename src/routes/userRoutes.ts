@@ -8,6 +8,7 @@ import { MessagesController } from "../controller/user/messagesController";
 import { NotificationsController } from "../controller/user/notificationsController";
 import { ReviewsController } from "../controller/user/reviewsController";
 import { OfferController } from "../controller/user/offerController";
+import { PaymentController } from "../controller/user/paymentController"; // New import
 import { FavoritesService } from "../services/user/favoritesService";
 import { ProfileService } from "../services/user/profileService";
 import { PasswordService } from "../services/user/passwordService";
@@ -17,6 +18,7 @@ import { MessagesService } from "../services/user/messagesService";
 import { NotificationsService } from "../services/user/notificationsService";
 import { ReviewsService } from "../services/user/reviewsService";
 import { OfferService } from "../services/user/offerService";
+import { PaymentService } from "../services/user/paymentService"; // New import
 import { FavoritesRepository } from "../repositories/user/favoritesRepository";
 import { ProfileRepository } from "../repositories/user/profileRepository";
 import { PasswordRepository } from "../repositories/user/passwordRepository";
@@ -26,6 +28,7 @@ import { MessagesRepository } from "../repositories/user/messagesRepository";
 import { NotificationsRepository } from "../repositories/user/notificationsRepository";
 import { ReviewsRepository } from "../repositories/user/reviewsRepository";
 import { OfferRepository } from "../repositories/user/offerRepository";
+import { PaymentRepository } from "../repositories/user/paymentRepository"; // New import
 import verifyUser from "../middleware/verifyUser";
 
 const router = express.Router();
@@ -40,6 +43,7 @@ const messagesRepository = new MessagesRepository();
 const notificationsRepository = new NotificationsRepository();
 const reviewsRepository = new ReviewsRepository();
 const offerRepository = new OfferRepository();
+const paymentRepository = new PaymentRepository(); // New repository
 
 // Initialize services
 const favoritesService = new FavoritesService(favoritesRepository);
@@ -51,6 +55,7 @@ const messagesService = new MessagesService(messagesRepository);
 const notificationsService = new NotificationsService(notificationsRepository);
 const reviewsService = new ReviewsService(reviewsRepository);
 const offerService = new OfferService(offerRepository);
+const paymentService = new PaymentService(paymentRepository); // New service
 
 // Initialize controllers
 const favoritesController = new FavoritesController(favoritesService);
@@ -62,6 +67,7 @@ const messagesController = new MessagesController(messagesService);
 const notificationsController = new NotificationsController(notificationsService);
 const reviewsController = new ReviewsController(reviewsService);
 const offerController = new OfferController(offerService);
+const paymentController = new PaymentController(paymentService); // New controller
 
 // Favorites routes
 router.route("/favorites")
@@ -75,12 +81,10 @@ router.route("/favorites")
 // Profile routes
 router.route("/get-profile").get(verifyUser, async (req: Request, res: Response) => {
     await profileController.getProfile(req, res);
-}); 
-
+});
 router.route("/update-profile-image").post(verifyUser, async (req: Request, res: Response) => {
     await profileController.updateProfileImage(req, res);
 });
-
 router.route("/update-about").post(verifyUser, async (req: Request, res: Response) => {
     await profileController.updateAbout(req, res);
 });
@@ -94,11 +98,9 @@ router.route("/change-password").post(verifyUser, async (req: Request, res: Resp
 router.route("/listings").get(async (req: Request, res: Response) => {
     await listingsController.getListingsByCategory(req, res);
 });
-
 router.route("/:listingId").get(async (req: Request, res: Response) => {
     await listingsController.getListingById(req, res);
 });
-
 router.route("/listings").post(verifyUser, async (req: Request, res: Response) => {
     await listingsController.createListing(req, res);
 });
@@ -107,7 +109,6 @@ router.route("/listings").post(verifyUser, async (req: Request, res: Response) =
 router.route("/reservation").post(verifyUser, async (req: Request, res: Response) => {
     await reservationsController.createReservation(req, res);
 });
-
 router.route("/reservations/:reservationId").delete(verifyUser, async (req: Request, res: Response) => {
     await reservationsController.cancelReservation(req, res);
 });
@@ -116,11 +117,9 @@ router.route("/reservations/:reservationId").delete(verifyUser, async (req: Requ
 router.route("/messages").post(verifyUser, async (req: Request, res: Response) => {
     await messagesController.createMessage(req, res);
 });
-
 router.route("/messages/seen/:conversationId").post(verifyUser, async (req: Request, res: Response) => {
     await messagesController.markMessageAsSeen(req, res);
 });
-
 router.post("/conversations/:conversationId/messages", verifyUser, async (req: Request, res: Response) => {
     await messagesController.createMessage(req, res);
 });
@@ -129,15 +128,12 @@ router.post("/conversations/:conversationId/messages", verifyUser, async (req: R
 router.route("/notification-count").get(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.getNotificationCount(req, res);
 });
-
 router.route("/notifications/:notificationId").delete(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.deleteNotification(req, res);
 });
-
 router.route("/notifications").get(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.getNotifications(req, res);
 });
-
 router.route("/notifications").post(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.createNotification(req, res);
 });
@@ -146,15 +142,12 @@ router.route("/notifications").post(verifyUser, async (req: Request, res: Respon
 router.route("/reviews").post(verifyUser, async (req: Request, res: Response) => {
     await reviewsController.createReview(req, res);
 });
-
 router.route("/reviews/:reviewId").put(verifyUser, async (req: Request, res: Response) => {
     await reviewsController.updateReview(req, res);
 });
-
 router.route("/reviews/:reviewId").delete(verifyUser, async (req: Request, res: Response) => {
     await reviewsController.deleteReview(req, res);
 });
-
 router.route("/reviews/:listingId").get(async (req: Request, res: Response) => {
     await reviewsController.getReviews(req, res);
 });
@@ -162,6 +155,11 @@ router.route("/reviews/:listingId").get(async (req: Request, res: Response) => {
 // Offer routes
 router.route("/listings/:listingId/offer").put(verifyUser, async (req: Request, res: Response) => {
     await offerController.updateOfferPrice(req, res);
+});
+
+// Payment routes (createOrder)
+router.route("/order").post(async (req: Request, res: Response) => {
+    await paymentController.createOrder(req, res);
 });
 
 export default router;

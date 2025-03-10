@@ -1,14 +1,18 @@
+# Base image
 FROM node:alpine3.18
 WORKDIR /app
 
-# Copy package.json and package-lock.json first for caching
+# Copy package files first (for better caching)
 COPY package.json package-lock.json ./
 
-# Install dependencies including ts-node and nodemon
-RUN npm install && npm install -g nodemon ts-node typescript && npx prisma generate
+# Install dependencies
+RUN npm install && npm install -g nodemon ts-node typescript
 
-# Copy the rest of the application files
+# Copy the entire project, including the prisma folder
 COPY . .
+
+# Run Prisma generate
+RUN npx prisma generate
 
 # Expose the port
 EXPOSE 5000

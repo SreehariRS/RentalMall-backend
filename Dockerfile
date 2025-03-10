@@ -1,18 +1,16 @@
 FROM node:alpine3.18
-
-# Set working directory inside container
 WORKDIR /app
 
-# Copy package.json and package-lock.json first to optimize caching
+# Copy package files first for caching
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies and install nodemon globally
+RUN npm install && npm install -g nodemon
 
-# Copy all remaining application files
+# Copy the rest of the files
 COPY . .
 
-# Expose the port the app runs on
+# Expose the port
 EXPOSE 5000
 
 # Start the application

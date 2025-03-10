@@ -1,5 +1,38 @@
-name: Deploy node Application
+name: Deploy Node Application
 
-no:
-push:
-branches:
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t sreeharirs/rentalmall .
+
+      - name: Publish image to Docker Hub
+        run: docker push sreeharirs/rentalmall:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from Docker Hub
+        run: docker pull sreeharirs/rentalmall:latest
+
+      - name: Stop and remove existing container (if any)
+        run: |
+          docker stop rentalmall-container || true
+          docker rm rentalmall-container || true
+        continue-on-error: true
+
+      - name: Run Docker container
+        run: docker run -d -p 5000:5000 --name rentalmall-container -e PRISMA_PASSWORD='${{ secrets.PRISMA_PASSWORD }}' sreeharirs/rentalmall

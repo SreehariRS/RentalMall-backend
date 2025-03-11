@@ -16,7 +16,6 @@ const server = http.createServer(app);
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:3000",
@@ -25,18 +24,20 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
 app.use(cookieParser());
 app.use(
   morgan("combined", {
-    stream: {
-      write: (message) => logger.info(message.trim()),
-    },
+    stream: { write: (message) => logger.info(message.trim()) },
   })
 );
 
+// Health check endpoint
+app.get("/health", (req: Request, res: Response) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: " RentalMall Backend is Running 🚀" });
+  res.status(200).json({ message: "RentalMall Backend is Running 🚀" });
 });
 
 app.use("/api/admin", adminRouter);
@@ -48,7 +49,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((req: Request, res: Response) => {
-  res.status(404).json({ message: " Route Not Found" });
+  res.status(404).json({ message: "Route Not Found" });
 });
 
 export default app;

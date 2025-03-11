@@ -1,11 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --watch src --exec ts-node src/server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start:prod": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -45,7 +46,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.10.2",
     "eslint": "^9.17.0",
-    "eslint-plugin-typescript": "^0.14.0",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
     "globals": "^15.14.0",
     "prisma": "^6.1.0",
     "typescript": "^5.7.2"

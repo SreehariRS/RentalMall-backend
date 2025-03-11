@@ -13,6 +13,9 @@ RUN npm install && npm install -g nodemon ts-node typescript
 # Install missing TypeScript type definitions
 RUN npm install --save-dev @types/cors @types/morgan @types/cookie-parser
 
+# Install MongoDB package to prevent missing module errors
+RUN npm install mongodb
+
 # Copy Prisma schema before running `prisma generate`
 COPY prisma ./prisma
 RUN npx prisma generate

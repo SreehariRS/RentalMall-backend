@@ -4,17 +4,16 @@ FROM node:alpine3.18
 # Set working directory
 WORKDIR /app
 
-# Copy package files first (for better caching)
+# Install dependencies first
 COPY package.json package-lock.json ./
 
-# Install all dependencies (including dev dependencies)
 RUN npm install && npm install -g nodemon ts-node typescript
 
 # Install missing TypeScript type definitions
 RUN npm install --save-dev @types/cors @types/morgan @types/cookie-parser
 
-# Install MongoDB package to prevent missing module errors
-RUN npm install mongodb
+# ✅ Install curl inside the container
+RUN apk add --no-cache curl
 
 # Copy Prisma schema before running `prisma generate`
 COPY prisma ./prisma
@@ -26,7 +25,7 @@ COPY . .
 # Expose application port
 EXPOSE 5000
 
-# Health check to ensure server is running
+# ✅ Update Health Check (Now curl will be available)
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD curl -f http://localhost:5000 || exit 1
 

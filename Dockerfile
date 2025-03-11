@@ -1,19 +1,20 @@
 # Use a lightweight Node.js image
 FROM node:alpine3.18
 
+# ✅ Install curl and other utilities
+RUN apk add --no-cache curl bash
+
 # Set working directory
 WORKDIR /app
 
-# Install dependencies first
+# Copy package files first (for better caching)
 COPY package.json package-lock.json ./
 
+# Install all dependencies (including dev dependencies)
 RUN npm install && npm install -g nodemon ts-node typescript
 
 # Install missing TypeScript type definitions
 RUN npm install --save-dev @types/cors @types/morgan @types/cookie-parser
-
-# ✅ Install curl inside the container
-RUN apk add --no-cache curl
 
 # Copy Prisma schema before running `prisma generate`
 COPY prisma ./prisma

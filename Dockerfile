@@ -1,4 +1,3 @@
-# Use a lightweight Node.js image
 FROM node:alpine3.18
 
 # Install curl and other utilities
@@ -23,10 +22,6 @@ COPY . .
 
 # Expose application port
 EXPOSE 5000
-
-# Health check with start period
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:5000 || exit 1
 
 # Start the application
 CMD ["npm", "run", "start"]

@@ -1,4 +1,4 @@
-FROM node:alpine3.18
+FROM node:20-alpine
 
 # Install curl and other utilities
 RUN apk add --no-cache curl bash

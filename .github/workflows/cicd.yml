@@ -28,10 +28,15 @@ jobs:
       
       - name: Run Docker container
         run: |
+          docker stop rentalmall-container || true
+          docker rm rentalmall-container || true
           docker run -d -p 5000:5000 --name rentalmall-container \
             -e PRISMA_PASSWORD='${{ secrets.PRISMA_PASSWORD }}' \
             -e PUSHER_APP_ID='${{ secrets.PUSHER_APP_ID }}' \
             -e NEXT_PUBLIC_PUSHER_APP_KEY='${{ secrets.NEXT_PUBLIC_PUSHER_APP_KEY }}' \
             -e PUSHER_SECRET='${{ secrets.PUSHER_SECRET }}' \
             -e PUSHER_CLUSTER='${{ secrets.PUSHER_CLUSTER }}' \
+            -e RAZORPAY_KEY_ID='${{ secrets.RAZORPAY_KEY_ID }}' \
+            -e RAZORPAY_KEY_SECRET='${{ secrets.RAZORPAY_KEY_SECRET }}' \
+            -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
             sreeharirs/rentalmall

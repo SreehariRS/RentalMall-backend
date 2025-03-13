@@ -31,25 +31,29 @@ app.use(
   })
 );
 
-// Health check endpoint
+// ✅ Health Check (before other routes)
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
+// ✅ Root Route
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "RentalMall Backend is Running 🚀" });
 });
 
+// Routes
 app.use("/api/admin", adminRouter);
 app.use("/api", userRouter);
 
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error("Global Error:", err);
-  res.status(500).json({ message: "Internal Server Error" });
+// ✅ 404 Fallback Route (handles unknown paths)
+app.use("*", (req: Request, res: Response) => {
+  res.status(404).json({ message: "Route Not Found" });
 });
 
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ message: "Route Not Found" });
+// ✅ Global Error Handling
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  logger.error(`Global Error: ${err.message}`);
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
 export default app;

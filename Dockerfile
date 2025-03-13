@@ -6,9 +6,9 @@ RUN apk add --no-cache curl bash
 # Set working directory
 WORKDIR /app
 
-# Update npm and install dependencies
+# Copy package files and install dependencies
 COPY package.json package-lock.json ./
-RUN npm install -g npm@11.2.0 && npm install && npm install -g nodemon ts-node typescript
+RUN npm install
 
 # Install TypeScript type definitions
 RUN npm install --save-dev @types/cors @types/morgan @types/cookie-parser
@@ -20,8 +20,11 @@ RUN npx prisma generate
 # Copy the entire project
 COPY . .
 
+# Build the TypeScript code
+RUN npm run build
+
 # Expose application port
 EXPOSE 5000
 
-# Start the application
-CMD ["npm", "run", "start"]
+# Start the application in production mode
+CMD ["npm", "run", "start:prod"]

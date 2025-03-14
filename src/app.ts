@@ -16,14 +16,18 @@ const server = http.createServer(app);
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+console.log("DEBUG: CLIENT_URL in CORS:", process.env.CLIENT_URL);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(",") : ["http://localhost:3000"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+
 app.use(cookieParser());
 app.use(
   morgan("combined", {

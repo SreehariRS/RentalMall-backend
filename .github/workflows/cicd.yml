@@ -20,42 +20,23 @@ jobs:
 
       - name: Publish image to Docker Hub
         run: docker push sreeharirs/rentalmall:latest
+deploy:
+  needs: build
+  runs-on: self-hosted
+  steps:
+    - name: Run Docker container
+      run: |
+        docker stop rentalmall-container || true
+        docker rm rentalmall-container || true
+        docker run -d -p 5000:5000 --name rentalmall-container \
+          --env CLIENT_URL=${{ secrets.CLIENT_URL }} \
+          --env NEXT_PUBLIC_PUSHER_APP_KEY=${{ secrets.NEXT_PUBLIC_PUSHER_APP_KEY }} \
+          --env PRISMA_PASSWORD=${{ secrets.PRISMA_PASSWORD }} \
+          --env PUSHER_APP_ID=${{ secrets.PUSHER_APP_ID }} \
+          --env PUSHER_SECRET=${{ secrets.PUSHER_SECRET }} \
+          --env PUSHER_CLUSTER=${{ secrets.PUSHER_CLUSTER }} \
+          --env RAZORPAY_KEY_ID=${{ secrets.RAZORPAY_KEY_ID }} \
+          --env RAZORPAY_KEY_SECRET=${{ secrets.RAZORPAY_KEY_SECRET }} \
+          --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
+          sreeharirs/rentalmall:latest
 
-  deploy:
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - name: Pull image from Docker Hub
-        run: docker pull sreeharirs/rentalmall:latest
-
-      - name: Debug GitHub Secrets
-        run: |
-          echo "Checking Secrets..."
-          echo "NEXT_PUBLIC_PUSHER_APP_KEY: ${{ secrets.NEXT_PUBLIC_PUSHER_APP_KEY != '' }}"
-          echo "PRISMA_PASSWORD: ${{ secrets.PRISMA_PASSWORD != '' }}"
-          echo "PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID != '' }}"
-          echo "PUSHER_SECRET: ${{ secrets.PUSHER_SECRET != '' }}"
-          echo "PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER != '' }}"
-          echo "RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID != '' }}"
-          echo "RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET != '' }}"
-          echo "DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}"
-          echo "CLIENT_URL: ${{ secrets.CLIENT_URL != '' }}"
-
-      - name: Run Docker container
-        run: |
-          docker stop rentalmall-container || true
-          docker rm rentalmall-container || true
-          docker run -d -p 5000:5000 --name rentalmall-container \
-            --env NEXT_PUBLIC_PUSHER_APP_KEY="${{ secrets.NEXT_PUBLIC_PUSHER_APP_KEY }}" \
-            --env PRISMA_PASSWORD="${{ secrets.PRISMA_PASSWORD }}" \
-            --env PUSHER_APP_ID="${{ secrets.PUSHER_APP_ID }}" \
-            --env PUSHER_SECRET="${{ secrets.PUSHER_SECRET }}" \
-            --env PUSHER_CLUSTER="${{ secrets.PUSHER_CLUSTER }}" \
-            --env RAZORPAY_KEY_ID="${{ secrets.RAZORPAY_KEY_ID }}" \
-            --env RAZORPAY_KEY_SECRET="${{ secrets.RAZORPAY_KEY_SECRET }}" \
-            --env DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-            --env CLIENT_URL="${{ secrets.CLIENT_URL }}" \
-            sreeharirs/rentalmall:latest
-
-      - name: Verify Environment Variables Inside Docker
-        run: docker exec rentalmall-container printenv | grep NEXT_PUBLIC_PUSHER_APP_KEY

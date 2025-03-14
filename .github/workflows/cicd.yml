@@ -19,7 +19,7 @@ jobs:
       - name: Publish image to Docker Hub
         run: docker push sreeharirs/rentalmall:latest
   
-  deploy:
+   deploy:
     needs: build
     runs-on: self-hosted
     steps:
@@ -39,4 +39,5 @@ jobs:
             -e RAZORPAY_KEY_ID='${{ secrets.RAZORPAY_KEY_ID }}' \
             -e RAZORPAY_KEY_SECRET='${{ secrets.RAZORPAY_KEY_SECRET }}' \
             -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+            -e CLIENT_URL='${{ secrets.CLIENT_URL }}' \
             sreeharirs/rentalmall

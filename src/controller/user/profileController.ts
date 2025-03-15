@@ -10,7 +10,6 @@ export class ProfileController {
 
     async getProfile(req: Request, res: Response): Promise<Response> {
         try {
-            console.log("dfghj")
             const email = (req as any).user.email;
             const userData = await this.profileService.findByEmail(email);
             if (!userData) {

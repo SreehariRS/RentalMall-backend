@@ -13,14 +13,15 @@ dotenv.config();
 const app: Application = express();
 const server = http.createServer(app);
 
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 console.log("DEBUG: CLIENT_URL in CORS:", process.env.CLIENT_URL);
-
+console.log(process.env.CLIENT_URL)
 app.use(
   cors({
-    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(",") : ["http://localhost:3000"],
+    origin: process.env.CLIENT_URL,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],

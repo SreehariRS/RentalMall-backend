@@ -5,14 +5,7 @@ import { Server } from "http";
 
 dotenv.config();
 
-// Add debugging logs for environment variables
-console.log("DEBUG: Environment Variables at Startup:");
-console.log("CLIENT_URL:", process.env.CLIENT_URL);
-console.log("PUSHER_APP_ID:", process.env.PUSHER_APP_ID);
-console.log("NEXT_PUBLIC_PUSHER_APP_KEY:", process.env.NEXT_PUBLIC_PUSHER_APP_KEY);
-console.log("PUSHER_SECRET:", process.env.PUSHER_SECRET);
-console.log("PUSHER_CLUSTER:", process.env.PUSHER_CLUSTER);
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
 
 const PORT = Number(process.env.PORT) || 5000;
 

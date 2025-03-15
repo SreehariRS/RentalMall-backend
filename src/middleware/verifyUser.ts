@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         let token = req.cookies.jwt;
-        
+        console.log(token)
         if (!token) {
             throw new CustomError("Authorization required", 401);
         }

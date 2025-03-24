@@ -1,7 +1,10 @@
+// src/repositories/user/reviewsRepository.ts
+
 import prisma from "../../libs/prismadb";
 import { CreateReviewParams, UpdateReviewParams, DeleteReviewParams, GetReviewsParams } from "../../services/interface/Iuser";
+import { IReviewsRepository } from "../interface/IUserRepositories";
 
-export class ReviewsRepository {
+export class ReviewsRepository implements IReviewsRepository {
     async createReview(params: CreateReviewParams): Promise<any> {
         return await prisma.review.create({
             data: { userId: params.userId, listingId: params.listingId, reservationId: params.reservationId, rating: params.rating, title: params.title, content: params.content, verified: true },
@@ -16,7 +19,7 @@ export class ReviewsRepository {
         return await prisma.review.delete({ where: { id: params.reviewId, userId: params.userId } });
     }
 
-    async getReviews(params: GetReviewsParams): Promise<any> {
+    async getReviews(params: GetReviewsParams): Promise<any[]> {
         const reviews = await prisma.review.findMany({ where: { listingId: params.listingId }, include: { user: true }, orderBy: { createdAt: "desc" } });
         return reviews.map((review) => ({
             id: review.id, author: review.user.name || "Anonymous", date: review.createdAt.toISOString(), rating: review.rating,
@@ -24,7 +27,7 @@ export class ReviewsRepository {
         }));
     }
 
-    async findReviewById(reviewId: string): Promise<any> {
+    async findReviewById(reviewId: string): Promise<any | null> {
         return await prisma.review.findUnique({ where: { id: reviewId } });
     }
 }

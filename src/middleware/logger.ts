@@ -6,28 +6,28 @@ const logDirectory = path.join(__dirname, '../logs');
 
 // Create a Daily Rotate File Transport
 const dailyRotateFileTransport = new transports.DailyRotateFile({
-  filename: 'application-%DATE%.log', // Log file format with date
-  dirname: logDirectory,              // Directory for storing logs
-  datePattern: 'YYYY-MM-DD',           // Date pattern for rotation
-  maxFiles: '7d',                      // Keep logs for 7 days
-  zippedArchive: true,                 // Compress logs after rotation
+  filename: 'application-%DATE%.log',
+  dirname: logDirectory,              
+  datePattern: 'YYYY-MM-DD',          
+  maxFiles: '7d',                   
+  zippedArchive: true,             
 });
 
 // Create the Winston logger
 const logger = createLogger({
-  level: 'info',                       // Log only info-level messages and above
+  level: 'info',                   
   format: format.combine(
-    format.timestamp(),                // Add timestamp to logs
-    format.json()                      // Log format as JSON
+    format.timestamp(),             
+    format.json()                    
   ),
   transports: [
-    new transports.Console({           // Console output
+    new transports.Console({          
       format: format.combine(
-        format.colorize(),             // Colorize console logs
-        format.simple()                // Simple format for console
+        format.colorize(),            
+        format.simple()               
       ),
     }),
-    dailyRotateFileTransport,          // Log file with daily rotation
+    dailyRotateFileTransport,         
   ],
 });
 

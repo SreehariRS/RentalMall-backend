@@ -1,3 +1,4 @@
+
 import express, { Request, Response } from "express";
 import { FavoritesController } from "../controller/user/favoritesController";
 import { ProfileController } from "../controller/user/profileController";
@@ -8,7 +9,7 @@ import { MessagesController } from "../controller/user/messagesController";
 import { NotificationsController } from "../controller/user/notificationsController";
 import { ReviewsController } from "../controller/user/reviewsController";
 import { OfferController } from "../controller/user/offerController";
-import { PaymentController } from "../controller/user/paymentController"; // New import
+import { PaymentController } from "../controller/user/paymentController";
 import { FavoritesService } from "../services/user/favoritesService";
 import { ProfileService } from "../services/user/profileService";
 import { PasswordService } from "../services/user/passwordService";
@@ -18,7 +19,7 @@ import { MessagesService } from "../services/user/messagesService";
 import { NotificationsService } from "../services/user/notificationsService";
 import { ReviewsService } from "../services/user/reviewsService";
 import { OfferService } from "../services/user/offerService";
-import { PaymentService } from "../services/user/paymentService"; // New import
+import { PaymentService } from "../services/user/paymentService";
 import { FavoritesRepository } from "../repositories/user/favoritesRepository";
 import { ProfileRepository } from "../repositories/user/profileRepository";
 import { PasswordRepository } from "../repositories/user/passwordRepository";
@@ -28,36 +29,38 @@ import { MessagesRepository } from "../repositories/user/messagesRepository";
 import { NotificationsRepository } from "../repositories/user/notificationsRepository";
 import { ReviewsRepository } from "../repositories/user/reviewsRepository";
 import { OfferRepository } from "../repositories/user/offerRepository";
-import { PaymentRepository } from "../repositories/user/paymentRepository"; // New import
+import { PaymentRepository } from "../repositories/user/paymentRepository";
 import verifyUser from "../middleware/verifyUser";
+import { IFavoritesRepository, IListingsRepository, IMessagesRepository, INotificationsRepository, IOfferRepository, IPasswordRepository, IPaymentRepository, IProfileRepository, IReservationsRepository, IReviewsRepository } from "../repositories/interface/IUserRepositories";
+import { IFavoritesService, IListingsService, IMessagesService, INotificationsService, IOfferService, IPasswordService, IPaymentService, IProfileService, IReservationsService, IReviewsService } from "../services/interface/Iuser";
 
 const router = express.Router();
 
 // Initialize repositories
-const favoritesRepository = new FavoritesRepository();
-const profileRepository = new ProfileRepository();
-const passwordRepository = new PasswordRepository();
-const listingsRepository = new ListingsRepository();
-const reservationsRepository = new ReservationsRepository();
-const messagesRepository = new MessagesRepository();
-const notificationsRepository = new NotificationsRepository();
-const reviewsRepository = new ReviewsRepository();
-const offerRepository = new OfferRepository();
-const paymentRepository = new PaymentRepository(); // New repository
+const favoritesRepository: IFavoritesRepository = new FavoritesRepository();
+const profileRepository: IProfileRepository = new ProfileRepository();
+const passwordRepository: IPasswordRepository = new PasswordRepository();
+const listingsRepository: IListingsRepository = new ListingsRepository();
+const reservationsRepository: IReservationsRepository = new ReservationsRepository();
+const messagesRepository: IMessagesRepository = new MessagesRepository();
+const notificationsRepository: INotificationsRepository = new NotificationsRepository();
+const reviewsRepository: IReviewsRepository = new ReviewsRepository();
+const offerRepository: IOfferRepository = new OfferRepository();
+const paymentRepository: IPaymentRepository = new PaymentRepository();
 
-// Initialize services
-const favoritesService = new FavoritesService(favoritesRepository);
-const profileService = new ProfileService(profileRepository);
-const passwordService = new PasswordService(passwordRepository);
-const listingsService = new ListingsService(listingsRepository);
-const reservationsService = new ReservationsService(reservationsRepository);
-const messagesService = new MessagesService(messagesRepository);
-const notificationsService = new NotificationsService(notificationsRepository);
-const reviewsService = new ReviewsService(reviewsRepository);
-const offerService = new OfferService(offerRepository);
-const paymentService = new PaymentService(paymentRepository); // New service
+// Initialize services with repository interfaces
+const favoritesService: IFavoritesService = new FavoritesService(favoritesRepository);
+const profileService: IProfileService = new ProfileService(profileRepository);
+const passwordService: IPasswordService = new PasswordService(passwordRepository);
+const listingsService: IListingsService = new ListingsService(listingsRepository);
+const reservationsService: IReservationsService = new ReservationsService(reservationsRepository);
+const messagesService: IMessagesService = new MessagesService(messagesRepository);
+const notificationsService: INotificationsService = new NotificationsService(notificationsRepository);
+const reviewsService: IReviewsService = new ReviewsService(reviewsRepository);
+const offerService: IOfferService = new OfferService(offerRepository);
+const paymentService: IPaymentService = new PaymentService(paymentRepository);
 
-// Initialize controllers
+// Initialize controllers with service interfaces
 const favoritesController = new FavoritesController(favoritesService);
 const profileController = new ProfileController(profileService);
 const passwordController = new PasswordController(passwordService);
@@ -67,7 +70,8 @@ const messagesController = new MessagesController(messagesService);
 const notificationsController = new NotificationsController(notificationsService);
 const reviewsController = new ReviewsController(reviewsService);
 const offerController = new OfferController(offerService);
-const paymentController = new PaymentController(paymentService); // New controller
+const paymentController = new PaymentController(paymentService);
+
 
 // Favorites routes
 router.route("/favorites")
@@ -157,7 +161,7 @@ router.route("/listings/:listingId/offer").put(verifyUser, async (req: Request, 
     await offerController.updateOfferPrice(req, res);
 });
 
-// Payment routes (createOrder)
+// Payment routes
 router.route("/order").post(async (req: Request, res: Response) => {
     await paymentController.createOrder(req, res);
 });

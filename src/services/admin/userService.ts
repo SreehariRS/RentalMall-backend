@@ -1,22 +1,30 @@
 import UserRepository from "../../repositories/admin/userRepository";
-import { PaginatedResponse, User } from "../interface/Iadmin";
+import { IUserService, PaginatedResponse, User } from "../interface/Iadmin";
 
-export default class UserService {
-    private userRepository: UserRepository;
+export default class UserService implements IUserService {
+  private userRepository: UserRepository;
 
-    constructor(userRepository: UserRepository) {
-        this.userRepository = userRepository;
-    }
+  constructor(userRepository: UserRepository) {
+    this.userRepository = userRepository;
+  }
 
-    async getAllUsers(page: number, limit: number): Promise<PaginatedResponse<User>> {
-        return await this.userRepository.getAllUsers(page, limit);
-    }
+  async getAllUsers(page: number, limit: number): Promise<PaginatedResponse<User>> {
+    return await this.userRepository.getAllUsers(page, limit);
+  }
 
-    async blockUser(userId: string): Promise<User | null> {
-        return await this.userRepository.blockUser(userId);
-    }
+  async blockUser(userId: string): Promise<User | null> {
+    return await this.userRepository.blockUser(userId);
+  }
 
-    async unblockUser(userId: string): Promise<User | null> {
-        return await this.userRepository.unblockUser(userId);
-    }
+  async unblockUser(userId: string): Promise<User | null> {
+    return await this.userRepository.unblockUser(userId);
+  }
+
+  async restrictHost(userId: string): Promise<User | null> {
+    return await this.userRepository.restrictHost(userId);
+  }
+
+  async unrestrictHost(userId: string): Promise<User | null> {
+    return await this.userRepository.unrestrictHost(userId);
+  }
 }

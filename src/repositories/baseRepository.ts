@@ -9,8 +9,7 @@ export abstract class BaseRepository {
         return { skip, totalPages };
     }
 
-    protected handleError(error: unknown, context: string): never {
+    protected handleError(error: unknown, context: string): void {
         console.error(`Error in ${context}:`, error);
-        throw error instanceof Error ? error : new Error(`Unexpected error in ${context}`);
     }
 }

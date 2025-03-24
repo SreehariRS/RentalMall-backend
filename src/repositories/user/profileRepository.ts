@@ -1,7 +1,10 @@
+// src/repositories/user/profileRepository.ts
+
 import { User } from "@prisma/client";
 import prisma from "../../libs/prismadb";
+import { IProfileRepository } from "../interface/IUserRepositories";
 
-export class ProfileRepository {
+export class ProfileRepository implements IProfileRepository {
     async findByEmail(email: string): Promise<User | null> {
         console.log("Finding user with email:", email);
         const getUser = await prisma.user.findUnique({ where: { email } });

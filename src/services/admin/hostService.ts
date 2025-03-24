@@ -1,10 +1,11 @@
-import HostRepository from "../../repositories/admin/hostRepository";
-import { PaginatedResponse } from "../interface/Iadmin";
 
-export default class HostService {
-    private hostRepository: HostRepository;
+import { IHostRepository } from "../../repositories/interface/IadminRepositories";
+import { IHostService, PaginatedResponse } from "../interface/Iadmin";
 
-    constructor(hostRepository: HostRepository) {
+export default class HostService implements IHostService {
+    private hostRepository: IHostRepository;
+
+    constructor(hostRepository: IHostRepository) {
         this.hostRepository = hostRepository;
     }
 

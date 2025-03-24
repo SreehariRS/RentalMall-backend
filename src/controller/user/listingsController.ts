@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { ListingsService } from "../../services/user/listingsService";
+import { IListingsService } from "../../services/interface/Iuser";
+import { IListingsController } from "../interface/IuserController";
 
-export class ListingsController {
-    private listingsService: ListingsService;
+export class ListingsController implements IListingsController {
+    private listingsService: IListingsService;
 
-    constructor(listingsService: ListingsService) {
+    constructor(listingsService: IListingsService) {
         this.listingsService = listingsService;
     }
 
@@ -40,7 +41,16 @@ export class ListingsController {
             const { title, description, imageSrc, category, roomCount, guestCount, location, price } = req.body;
             const userId = (req as any).user.id;
             const listing = await this.listingsService.createListing({
-                title, description, imageSrc, category, roomCount, guestCount, location, price, userId, locationValues: undefined,
+                title,
+                description,
+                imageSrc,
+                category,
+                roomCount,
+                guestCount,
+                location,
+                price,
+                userId,
+                locationValues: undefined,
             });
             return res.status(201).json(listing);
         } catch (error: any) {

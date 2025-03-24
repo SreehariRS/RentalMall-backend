@@ -1,23 +1,23 @@
-import { Listing, User } from "@prisma/client";
-import { CreateListingParams, FilterListingsParams } from "../interface/Iuser";
-import { ListingsRepository } from "../../repositories/user/listingsRepository";
 
-export class ListingsService {
-    private listingsRepository: ListingsRepository;
+import { IListingsService, CreateListingParams, FilterListingsParams } from "../interface/Iuser";
+import { IListingsRepository } from "../../repositories/interface/IUserRepositories";
 
-    constructor(listingsRepository: ListingsRepository) {
+export class ListingsService implements IListingsService {
+    private listingsRepository: IListingsRepository;
+
+    constructor(listingsRepository: IListingsRepository) {
         this.listingsRepository = listingsRepository;
     }
 
-    async getListingsByCategory(params: FilterListingsParams) {
+    async getListingsByCategory(params: FilterListingsParams): Promise<any> {
         return await this.listingsRepository.getListingsByCategory(params);
     }
 
-    async getListingById(listingId: string): Promise<(Listing & { user: User | null }) | null> {
+    async getListingById(listingId: string): Promise<any> {
         return await this.listingsRepository.findById(listingId);
     }
 
-    async createListing(params: CreateListingParams): Promise<Listing> {
+    async createListing(params: CreateListingParams): Promise<any> {
         if (!params.imageSrc || !Array.isArray(params.imageSrc)) {
             throw new Error("Image sources must be provided as an array");
         }

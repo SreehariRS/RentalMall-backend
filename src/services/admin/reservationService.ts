@@ -1,10 +1,11 @@
-import ReservationRepository from "../../repositories/admin/reservationRepository";
-import { PaginatedResponse, Reservation } from "../interface/Iadmin";
 
-export default class ReservationService {
-    private reservationRepository: ReservationRepository;
+import { IReservationRepository } from "../../repositories/interface/IadminRepositories";
+import { IReservationService, PaginatedResponse, Reservation } from "../interface/Iadmin";
 
-    constructor(reservationRepository: ReservationRepository) {
+export default class ReservationService implements IReservationService {
+    private reservationRepository: IReservationRepository;
+
+    constructor(reservationRepository: IReservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 

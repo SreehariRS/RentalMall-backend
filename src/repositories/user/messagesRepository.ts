@@ -1,7 +1,10 @@
+// src/repositories/user/messagesRepository.ts
+
 import prisma from "../../libs/prismadb";
 import { CreateMessageParams, MarkMessageAsSeenParams } from "../../services/interface/Iuser";
+import { IMessagesRepository } from "../interface/IUserRepositories";
 
-export class MessagesRepository {
+export class MessagesRepository implements IMessagesRepository {
     async createMessage(params: CreateMessageParams): Promise<any> {
         return await prisma.message.create({
             data: {

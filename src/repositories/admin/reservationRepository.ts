@@ -1,7 +1,10 @@
+// src/repositories/admin/reservationRepository.ts
+
 import prismaInstance from "../../libs/prismadb";
 import { PaginatedResponse, Reservation } from "../../services/interface/Iadmin";
+import { IReservationRepository } from "../interface/IadminRepositories";
 
-export default class ReservationRepository {
+export default class ReservationRepository implements IReservationRepository {
     async getAllReservations(page: number = 1, limit: number = 8): Promise<PaginatedResponse<Reservation>> {
         try {
             const skip = (page - 1) * limit;

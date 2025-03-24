@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import { MessagesService } from "../../services/user/messagesService";
+import { IMessagesService } from "../../services/interface/Iuser";
+import { IMessagesController } from "../interface/IuserController";
 import { pusherServer } from "../../libs/pusher";
 
-export class MessagesController {
-    private messagesService: MessagesService;
+export class MessagesController implements IMessagesController {
+    private messagesService: IMessagesService;
 
-    constructor(messagesService: MessagesService) {
+    constructor(messagesService: IMessagesService) {
         this.messagesService = messagesService;
     }
 
@@ -16,12 +17,23 @@ export class MessagesController {
             if (!currentUser?.id || !currentUser?.email) {
                 return res.status(401).json({ message: "Unauthorized" });
             }
-            const newMessage = await this.messagesService.createMessage({ message, image, conversationId, senderId: currentUser.id });
-            const updatedConversation = await this.messagesService.updateConversationLastMessage(conversationId, newMessage.id);
+            const newMessage = await this.messagesService.createMessage({
+                message,
+                image,
+                conversationId,
+                senderId: currentUser.id,
+            });
+            const updatedConversation = await this.messagesService.updateConversationLastMessage(
+                conversationId,
+                newMessage.id
+            );
             await pusherServer.trigger(conversationId, "messages:new", newMessage);
             const lastMessage = updatedConversation.messages[updatedConversation.messages.length - 1];
             updatedConversation.users.map((user: { email: string | string[] }) => {
-                pusherServer.trigger(user.email!, "conversation:update", { id: conversationId, messages: [lastMessage] });
+                pusherServer.trigger(user.email!, "conversation:update", {
+                    id: conversationId,
+                    messages: [lastMessage],
+                });
             });
             return res.status(200).json(newMessage);
         } catch (error) {
@@ -37,8 +49,15 @@ export class MessagesController {
             if (!currentUser?.id || !currentUser?.email) {
                 return res.status(401).json({ message: "Unauthorized" });
             }
-            const updatedMessage = await this.messagesService.markMessageAsSeen({ conversationId, userId: currentUser.id, userEmail: currentUser.email });
-            await pusherServer.trigger(currentUser.email, "conversation:update", { id: conversationId, message: [updatedMessage] });
+            const updatedMessage = await this.messagesService.markMessageAsSeen({
+                conversationId,
+                userId: currentUser.id,
+                userEmail: currentUser.email,
+            });
+            await pusherServer.trigger(currentUser.email, "conversation:update", {
+                id: conversationId,
+                message: [updatedMessage],
+            });
             await pusherServer.trigger(conversationId, "message:update", updatedMessage);
             return res.status(200).json(updatedMessage);
         } catch (error) {

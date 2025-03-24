@@ -1,7 +1,10 @@
+// src/repositories/user/reservationsRepository.ts
+
 import prisma from "../../libs/prismadb";
 import { CreateReservationParams, CancelReservationParams, WalletUpdateParams, CreateNotificationParams } from "../../services/interface/Iuser";
+import { IReservationsRepository } from "../interface/IUserRepositories";
 
-export class ReservationsRepository {
+export class ReservationsRepository implements IReservationsRepository {
     async createReservation(data: CreateReservationParams): Promise<any> {
         return await prisma.reservation.create({ data });
     }

@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { PaymentService } from "../../services/user/paymentService";
+import { IPaymentService } from "../../services/interface/Iuser";
+import { IPaymentController } from "../interface/IuserController";
 
-export class PaymentController {
-    private paymentService: PaymentService;
+export class PaymentController implements IPaymentController {
+    private paymentService: IPaymentService;
 
-    constructor(paymentService: PaymentService) {
+    constructor(paymentService: IPaymentService) {
         this.paymentService = paymentService;
     }
 

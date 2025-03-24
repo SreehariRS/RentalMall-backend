@@ -190,12 +190,13 @@ model Notification {
 }
   // admin
 
-  model Admin {
-    id             String   @id @default(auto()) @map("_id") @db.ObjectId
-    email          String   @unique
-    password       String
-    role           String   @default("admin") // Example: "admin", "superadmin"
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
-  }
- 
+model Admin {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  email          String   @unique
+  password       String
+  role           String   @default("admin")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  accessToken    String?  // Store access token (optional, could be transient)
+  refreshToken   String?  // Store refresh token
+}

@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { PasswordService } from "../../services/user/passwordService";
+import { IPasswordService } from "../../services/interface/Iuser";
+import { IPasswordController } from "../interface/IuserController";
 
-export class PasswordController {
-    private passwordService: PasswordService;
+export class PasswordController implements IPasswordController {
+    private passwordService: IPasswordService;
 
-    constructor(passwordService: PasswordService) {
+    constructor(passwordService: IPasswordService) {
         this.passwordService = passwordService;
     }
 

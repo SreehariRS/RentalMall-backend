@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { NotificationsService } from "../../services/user/notificationsService";
+import { INotificationsService } from "../../services/interface/Iuser";
+import { INotificationsController } from "../interface/IuserController";
 import { pusherServer } from "../../libs/pusher";
 import prisma from "../../libs/prismadb";
 
-export class NotificationsController {
-    private notificationsService: NotificationsService;
+export class NotificationsController implements INotificationsController {
+    private notificationsService: INotificationsService;
 
-    constructor(notificationsService: NotificationsService) {
+    constructor(notificationsService: INotificationsService) {
         this.notificationsService = notificationsService;
     }
 

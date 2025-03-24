@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { ReviewsService } from "../../services/user/reviewsService";
+import { IReviewsService } from "../../services/interface/Iuser";
+import { IReviewsController } from "../interface/IuserController";
 
-export class ReviewsController {
-    private reviewsService: ReviewsService;
+export class ReviewsController implements IReviewsController {
+    private reviewsService: IReviewsService;
 
-    constructor(reviewsService: ReviewsService) {
+    constructor(reviewsService: IReviewsService) {
         this.reviewsService = reviewsService;
     }
 

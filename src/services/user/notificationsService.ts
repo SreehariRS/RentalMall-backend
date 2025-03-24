@@ -1,10 +1,11 @@
-import { DeleteNotificationParams, GetNotificationsParams, CreateNotificationParams } from "../interface/Iuser";
-import { NotificationsRepository } from "../../repositories/user/notificationsRepository";
 
-export class NotificationsService {
-    private notificationsRepository: NotificationsRepository;
+import { INotificationsService, DeleteNotificationParams, GetNotificationsParams, CreateNotificationParams } from "../interface/Iuser";
+import { INotificationsRepository } from "../../repositories/interface/IUserRepositories";
 
-    constructor(notificationsRepository: NotificationsRepository) {
+export class NotificationsService implements INotificationsService {
+    private notificationsRepository: INotificationsRepository;
+
+    constructor(notificationsRepository: INotificationsRepository) {
         this.notificationsRepository = notificationsRepository;
     }
 
@@ -13,15 +14,15 @@ export class NotificationsService {
         return await this.notificationsRepository.getNotificationCount(userId);
     }
 
-    async deleteNotification(params: DeleteNotificationParams) {
+    async deleteNotification(params: DeleteNotificationParams): Promise<any> {
         return await this.notificationsRepository.deleteNotification(params);
     }
 
-    async getNotifications(params: GetNotificationsParams) {
+    async getNotifications(params: GetNotificationsParams): Promise<any> {
         return await this.notificationsRepository.getNotifications(params);
     }
 
-    async createNotification(params: CreateNotificationParams) {
+    async createNotification(params: CreateNotificationParams): Promise<any> {
         return await this.notificationsRepository.createNotification(params);
     }
 }

@@ -1,10 +1,11 @@
-import { CreateReservationParams, CancelReservationParams } from "../interface/Iuser";
-import { ReservationsRepository } from "../../repositories/user/reservationsRepository";
 
-export class ReservationsService {
-    private reservationsRepository: ReservationsRepository;
+import { IReservationsService, CreateReservationParams, CancelReservationParams } from "../interface/Iuser";
+import { IReservationsRepository } from "../../repositories/interface/IUserRepositories";
 
-    constructor(reservationsRepository: ReservationsRepository) {
+export class ReservationsService implements IReservationsService {
+    private reservationsRepository: IReservationsRepository;
+
+    constructor(reservationsRepository: IReservationsRepository) {
         this.reservationsRepository = reservationsRepository;
     }
 
@@ -12,7 +13,7 @@ export class ReservationsService {
         return await this.reservationsRepository.createReservation(params);
     }
 
-    async cancelReservation(params: CancelReservationParams, currentUserId: string) {
+    async cancelReservation(params: CancelReservationParams, currentUserId: string): Promise<any> {
         const reservation = await this.reservationsRepository.findReservationById(params.reservationId);
         if (!reservation) throw new Error("Reservation not found");
         if (reservation.userId !== currentUserId && reservation.listing.userId !== currentUserId) {

@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import DashboardService from "../../services/admin/dashboardService";
+import { IDashboardService } from "../../services/interface/Iadmin";
+import { IDashboardController } from "../interface/IadminController";
 
-export class DashboardController {
-    private dashboardService: DashboardService;
+export class DashboardController implements IDashboardController {
+    private dashboardService: IDashboardService;
 
-    constructor(dashboardService: DashboardService) {
+    constructor(dashboardService: IDashboardService) {
         this.dashboardService = dashboardService;
     }
 

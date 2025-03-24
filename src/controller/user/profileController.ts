@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { ProfileService } from "../../services/user/profileService";
+import { IProfileService } from "../../services/interface/Iuser";
+import { IProfileController } from "../interface/IuserController";
 
-export class ProfileController {
-    private profileService: ProfileService;
+export class ProfileController implements IProfileController {
+    private profileService: IProfileService;
 
-    constructor(profileService: ProfileService) {
+    constructor(profileService: IProfileService) {
         this.profileService = profileService;
     }
 

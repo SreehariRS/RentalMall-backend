@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import HostService from "../../services/admin/hostService";
+import { IHostService } from "../../services/interface/Iadmin";
+import { IHostController } from "../interface/IadminController";
 
-export class HostController {
-    private hostService: HostService;
+export class HostController implements IHostController {
+    private hostService: IHostService;
 
-    constructor(hostService: HostService) {
+    constructor(hostService: IHostService) {
         this.hostService = hostService;
     }
 

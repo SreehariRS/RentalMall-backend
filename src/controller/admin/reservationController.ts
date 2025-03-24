@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import ReservationService from "../../services/admin/reservationService";
+import { IReservationService } from "../../services/interface/Iadmin";
+import { IReservationController } from "../interface/IadminController";
 
-export class ReservationController {
-    private reservationService: ReservationService;
+export class ReservationController implements IReservationController {
+    private reservationService: IReservationService;
 
-    constructor(reservationService: ReservationService) {
+    constructor(reservationService: IReservationService) {
         this.reservationService = reservationService;
     }
 

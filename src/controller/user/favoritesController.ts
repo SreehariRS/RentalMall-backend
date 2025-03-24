@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { FavoritesService } from "../../services/user/favoritesService";
+import { IFavoritesService } from "../../services/interface/Iuser";
+import { IFavoritesController } from "../interface/IuserController";
 
-export class FavoritesController {
-    private favoritesService: FavoritesService;
+export class FavoritesController implements IFavoritesController {
+    private favoritesService: IFavoritesService;
 
-    constructor(favoritesService: FavoritesService) {
+    constructor(favoritesService: IFavoritesService) {
         this.favoritesService = favoritesService;
     }
 

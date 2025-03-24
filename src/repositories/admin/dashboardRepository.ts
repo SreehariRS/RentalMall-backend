@@ -1,7 +1,11 @@
-import prismaInstance from "../../libs/prismadb";
+// src/repositories/admin/dashboardRepository.ts
 
-export default class DashboardRepository {
-    async getDashboardStats() {
+import prismaInstance from "../../libs/prismadb";
+import { DashboardStats } from "../../services/interface/Iadmin";
+import { IDashboardRepository } from "../interface/IadminRepositories";
+
+export default class DashboardRepository implements IDashboardRepository {
+    async getDashboardStats(): Promise<DashboardStats> {
         const totalUsers = await prismaInstance.user.count();
         const totalBookings = await prismaInstance.reservation.count();
         const totalListings = await prismaInstance.listing.count();

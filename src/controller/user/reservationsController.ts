@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import { ReservationsService } from "../../services/user/reservationsService";
+import { IReservationsService } from "../../services/interface/Iuser";
+import { IReservationsController } from "../interface/IuserController";
 import { pusherServer } from "../../libs/pusher";
 
-export class ReservationsController {
-    private reservationsService: ReservationsService;
+export class ReservationsController implements IReservationsController {
+    private reservationsService: IReservationsService;
 
-    constructor(reservationsService: ReservationsService) {
+    constructor(reservationsService: IReservationsService) {
         this.reservationsService = reservationsService;
     }
 

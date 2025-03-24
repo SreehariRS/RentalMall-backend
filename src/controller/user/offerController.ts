@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { OfferService } from "../../services/user/offerService";
+import { IOfferService } from "../../services/interface/Iuser";
+import { IOfferController } from "../interface/IuserController";
 
-export class OfferController {
-    private offerService: OfferService;
+export class OfferController implements IOfferController {
+    private offerService: IOfferService;
 
-    constructor(offerService: OfferService) {
+    constructor(offerService: IOfferService) {
         this.offerService = offerService;
     }
 

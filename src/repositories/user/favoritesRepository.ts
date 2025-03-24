@@ -1,7 +1,10 @@
+// src/repositories/user/favoritesRepository.ts
+
 import { User } from "@prisma/client";
 import prisma from "../../libs/prismadb";
+import { IFavoritesRepository } from "../interface/IUserRepositories";
 
-export class FavoritesRepository {
+export class FavoritesRepository implements IFavoritesRepository {
     async addFavorite(userId: string, listingId: string): Promise<User> {
         return await prisma.user.update({
             where: { id: userId },

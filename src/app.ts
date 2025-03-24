@@ -29,15 +29,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Log for debugging
+      console.log("Request Origin:", origin);
+      console.log("CLIENT_URL from env:", process.env.CLIENT_URL);
+
       // Allow requests with no origin (e.g., Postman or curl)
       if (!origin) return callback(null, true);
 
-      // Use CLIENT_URL if available, otherwise fallback to allowedOrigins
-      const allowedOrigin = process.env.CLIENT_URL || allowedOrigins[0];
+      // Use CLIENT_URL if available, otherwise fallback to production URL
+      const allowedOrigin = process.env.CLIENT_URL || "https://www.rentalmall.site"; // Default to production URL
+      console.log("Resolved Allowed Origin:", allowedOrigin);
+
+      // Check if the origin is allowed
       if (origin === allowedOrigin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
+      // Log the rejection for debugging
+      console.log("CORS rejected for origin:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,

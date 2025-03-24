@@ -15,38 +15,29 @@ const server = http.createServer(app);
 
 // Define allowed origins
 const allowedOrigins = [
-  "https://www.rentalmall.site", // Without trailing slash
-  "https://www.rentalmall.site/", // With trailing slash
-  "http://localhost:3000", // For local development
+  "http://localhost:3000",
+  "https://www.rentalmall.site",
 ];
+
+// Log the CORS origin being used
+const corsOrigin = process.env.CLIENT_URL || "http://localhost:3000";
+console.log("CORS Origin set to:", corsOrigin);
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-console.log("DEBUG: CLIENT_URL in CORS:", process.env.CLIENT_URL);
-
-// Configure CORS with dynamic origin checking and detailed logging
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log("Incoming origin:", origin); // Log the incoming origin
-      if (!origin) {
-        console.log("No origin provided (e.g., Postman/curl), allowing request.");
+      // Allow requests with no origin (e.g., Postman or curl)
+      if (!origin) return callback(null, true);
+
+      // Use CLIENT_URL if available, otherwise fallback to allowedOrigins
+      const allowedOrigin = process.env.CLIENT_URL || allowedOrigins[0];
+      if (origin === allowedOrigin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // Normalize origin by removing trailing slash
-      const normalizedOrigin = origin.replace(/\/$/, "");
-      const normalizedAllowedOrigins = allowedOrigins.map((o) => o.replace(/\/$/, ""));
-      console.log("Normalized origin:", normalizedOrigin);
-      console.log("Allowed origins:", normalizedAllowedOrigins);
-
-      if (normalizedAllowedOrigins.includes(normalizedOrigin)) {
-        console.log("Origin is allowed by CORS.");
-        return callback(null, true);
-      }
-
-      console.log("Origin not allowed by CORS.");
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
@@ -54,20 +45,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// Explicitly handle OPTIONS preflight requests for /api/admin
-app.options("/api/admin", (req: Request, res: Response) => {
-  console.log("Handling OPTIONS preflight for /api/admin");
-  res.setHeader("Access-Control-Allow-Origin", "https://www.rentalmall.site");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.sendStatus(204); // No content for preflight
-});
-
-// General preflight handling for other routes
-app.options("*", cors());
-
 app.use(cookieParser());
 app.use(
   morgan("combined", {
@@ -75,12 +52,12 @@ app.use(
   })
 );
 
-// Health Check (before other routes)
+// ✅ Health Check (before other routes)
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
-// Root Route
+// ✅ Root Route
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "RentalMall Backend is Running 🚀" });
 });
@@ -89,12 +66,12 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/admin", adminRouter);
 app.use("/api", userRouter);
 
-// 404 Fallback Route (handles unknown paths)
+// ✅ 404 Fallback Route (handles unknown paths)
 app.use("*", (req: Request, res: Response) => {
   res.status(404).json({ message: "Route Not Found" });
 });
 
-// Global Error Handling
+// ✅ Global Error Handling
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   logger.error(`Global Error: ${err.message}`);
   res.status(500).json({ message: "Internal Server Error" });

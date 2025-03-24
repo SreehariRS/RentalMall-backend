@@ -13,14 +13,20 @@ dotenv.config();
 const app: Application = express();
 const server = http.createServer(app);
 
-// Define allowed origins (Ensure they don't have trailing slashes)
+// Define allowed origins (without trailing slashes)
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://www.rentalmall.site"
+  "https://www.rentalmall.site",
 ];
 
+// Normalize URL by removing trailing slashes
+const normalizeUrl = (url: string | undefined): string => {
+  if (!url) return "";
+  return url.replace(/\/+$/, ""); // Remove trailing slashes
+};
+
 // Log the CORS origin being used
-const corsOrigin = process.env.CLIENT_URL?.replace(/\/$/, "") || "http://localhost:3000";
+const corsOrigin = normalizeUrl(process.env.CLIENT_URL) || "http://localhost:3000";
 console.log("CORS Origin set to:", corsOrigin);
 
 // Middleware
@@ -29,18 +35,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Allow non-browser requests
-
-      // Normalize origin (remove trailing slash)
-      origin = origin.replace(/\/$/, "");
-
+      // Log for debugging
       console.log("Request Origin:", origin);
-      console.log("Allowed Origins:", allowedOrigins);
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+      // Allow requests with no origin (e.g., Postman or curl)
+      if (!origin) return callback(null, true);
+
+      // Normalize the incoming origin and allowed origins
+      const normalizedOrigin = normalizeUrl(origin);
+      const normalizedAllowedOrigins = allowedOrigins.map(normalizeUrl);
+      const normalizedCorsOrigin = normalizeUrl(corsOrigin);
+
+      console.log("Normalized Request Origin:", normalizedOrigin);
+      console.log("Normalized Allowed Origins:", normalizedAllowedOrigins);
+      console.log("Normalized CORS Origin from env:", normalizedCorsOrigin);
+
+      // Check if the normalized origin is allowed
+      if (
+        normalizedOrigin === normalizedCorsOrigin ||
+        normalizedAllowedOrigins.includes(normalizedOrigin)
+      ) {
+        return callback(null, origin); // Return the original origin (not normalized) to match exactly
       }
 
+      // Log the rejection for debugging
       console.log("CORS rejected for origin:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
@@ -70,7 +88,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/admin", adminRouter);
 app.use("/api", userRouter);
 
-// ✅ 404 Fallback Route
+// ✅ 404 Fallback Route (handles unknown paths)
 app.use("*", (req: Request, res: Response) => {
   res.status(404).json({ message: "Route Not Found" });
 });

@@ -5,8 +5,6 @@ import { Server } from "http";
 
 dotenv.config();
 
-
-
 const PORT = Number(process.env.PORT) || 5000;
 
 const startServer = async () => {

@@ -25,21 +25,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 console.log("DEBUG: CLIENT_URL in CORS:", process.env.CLIENT_URL);
 
-// Configure CORS with dynamic origin checking
+// Configure CORS with dynamic origin checking and detailed logging
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g., Postman, curl)
-      if (!origin) return callback(null, true);
+      console.log("Incoming origin:", origin); // Log the incoming origin
+      if (!origin) {
+        console.log("No origin provided (e.g., Postman/curl), allowing request.");
+        return callback(null, true);
+      }
 
       // Normalize origin by removing trailing slash
       const normalizedOrigin = origin.replace(/\/$/, "");
       const normalizedAllowedOrigins = allowedOrigins.map((o) => o.replace(/\/$/, ""));
+      console.log("Normalized origin:", normalizedOrigin);
+      console.log("Allowed origins:", normalizedAllowedOrigins);
 
       if (normalizedAllowedOrigins.includes(normalizedOrigin)) {
+        console.log("Origin is allowed by CORS.");
         return callback(null, true);
       }
 
+      console.log("Origin not allowed by CORS.");
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
@@ -48,7 +55,17 @@ app.use(
   })
 );
 
-// Explicitly handle OPTIONS preflight requests
+// Explicitly handle OPTIONS preflight requests for /api/admin
+app.options("/api/admin", (req: Request, res: Response) => {
+  console.log("Handling OPTIONS preflight for /api/admin");
+  res.setHeader("Access-Control-Allow-Origin", "https://www.rentalmall.site");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.sendStatus(204); // No content for preflight
+});
+
+// General preflight handling for other routes
 app.options("*", cors());
 
 app.use(cookieParser());

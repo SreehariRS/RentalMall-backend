@@ -37,7 +37,7 @@ app.use(
       if (!origin) return callback(null, true);
 
       // Use CLIENT_URL if available, otherwise fallback to production URL
-      const allowedOrigin = process.env.CLIENT_URL || "https://www.rentalmall.site"; // Default to production URL
+      const allowedOrigin ="https://www.rentalmall.site"; // Default to production URL
       console.log("Resolved Allowed Origin:", allowedOrigin);
 
       // Check if the origin is allowed

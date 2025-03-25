@@ -30,7 +30,7 @@ export class AuthController implements IAuthController {
     }
   }
 
-  async refresh(req: Request, res: Response): Promise<void> {
+   async refresh(req: Request, res: Response): Promise<void> {
     try {
       const { refreshToken } = req.body;
       if (!refreshToken) {

@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "NEXTAUTH_SECRET";
 console.log("JWT_SECRET initialized:", JWT_SECRET); // Log at startup
 
 export const protect = (req: Request, res: Response, next: NextFunction) => {

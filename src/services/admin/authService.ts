@@ -8,7 +8,7 @@ interface AdminPayload {
   role: string;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "NEXTAUTH_SECRET";
 const ACCESS_TOKEN_EXPIRY = "1h"; 
 const REFRESH_TOKEN_EXPIRY = "7d";
 

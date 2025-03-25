@@ -21,7 +21,7 @@ jobs:
       - name: Publish image to Docker Hub
         run: docker push sreeharirs/rentalmall:latest
 
-  deploy:  # ✅ FIXED: Now inside "jobs:"
+  deploy:
     needs: build
     runs-on: self-hosted
     steps:
@@ -39,4 +39,6 @@ jobs:
             --env RAZORPAY_KEY_ID=${{ secrets.RAZORPAY_KEY_ID }} \
             --env RAZORPAY_KEY_SECRET=${{ secrets.RAZORPAY_KEY_SECRET }} \
             --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            --env JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --restart unless-stopped \
             sreeharirs/rentalmall:latest

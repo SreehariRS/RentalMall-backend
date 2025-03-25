@@ -1,4 +1,4 @@
-name: Deploy Node Application
+name: CI/CD Pipeline
 
 on:
   push:
@@ -9,36 +9,55 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
+      - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build Docker image
-        run: docker build -t sreeharirs/rentalmall .
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-      - name: Publish image to Docker Hub
-        run: docker push sreeharirs/rentalmall:latest
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t sreeharirs/rentalmall:latest .
+          docker push sreeharirs/rentalmall:latest
 
   deploy:
+    runs-on: ubuntu-latest
     needs: build
-    runs-on: self-hosted
     steps:
-      - name: Run Docker container
-        run: |
-          docker stop rentalmall-container || true
-          docker rm rentalmall-container || true
-          docker run -d -p 5000:5000 --name rentalmall-container \
-            --env CLIENT_URL=${{ secrets.CLIENT_URL }} \
-            --env NEXT_PUBLIC_PUSHER_APP_KEY=${{ secrets.NEXT_PUBLIC_PUSHER_APP_KEY }} \
-            --env PRISMA_PASSWORD=${{ secrets.PRISMA_PASSWORD }} \
-            --env PUSHER_APP_ID=${{ secrets.PUSHER_APP_ID }} \
-            --env PUSHER_SECRET=${{ secrets.PUSHER_SECRET }} \
-            --env PUSHER_CLUSTER=${{ secrets.PUSHER_CLUSTER }} \
-            --env RAZORPAY_KEY_ID=${{ secrets.RAZORPAY_KEY_ID }} \
-            --env RAZORPAY_KEY_SECRET=${{ secrets.RAZORPAY_KEY_SECRET }} \
-            --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            --env JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            --restart unless-stopped \
-            sreeharirs/rentalmall:latest
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker stop rentalmall-container || true
+            docker rm rentalmall-container || true
+            docker pull sreeharirs/rentalmall:latest
+            docker run -d -p 5000:5000 --name rentalmall-container \
+              --env CLIENT_URL="https://www.rentalmall.site" \
+              --env NEXT_PUBLIC_PUSHER_APP_KEY="e99687abe201c87d979b" \
+              --env PRISMA_PASSWORD="${{ secrets.PRISMA_PASSWORD }}" \
+              --env PUSHER_APP_ID="1947042" \
+              --env PUSHER_SECRET="8de542e5dde9f45f2e25" \
+              --env PUSHER_CLUSTER="ap2" \
+              --env RAZORPAY_KEY_ID="rzp_test_rJ0yPg6ZIlUOvq" \
+              --env RAZORPAY_KEY_SECRET="ufxbfK2FqmH9NHjGPULk8uZf" \
+              --env DATABASE_URL="mongodb+srv://sreehari:sreehari@cluster0.x2o6n.mongodb.net/test?retryWrites=true&w=majority" \
+              --env JWT_SECRET="NEXTAUTH_SECRET" \
+              --restart unless-stopped \
+              sreeharirs/rentalmall:latest

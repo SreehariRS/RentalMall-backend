@@ -98,6 +98,7 @@ app.use("*", (req: Request, res: Response) => {
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   logger.error(`Global Error: ${err.message}`);
   res.status(500).json({ message: "Internal Server Error" });
+  
 });
 
 export default app;

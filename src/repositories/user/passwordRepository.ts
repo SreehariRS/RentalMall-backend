@@ -1,4 +1,3 @@
-// src/repositories/user/passwordRepository.ts
 
 import { User } from "@prisma/client";
 import prisma from "../../libs/prismadb";
@@ -14,4 +13,20 @@ export class PasswordRepository implements IPasswordRepository {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         return await prisma.user.update({ where: { id: userId }, data: { hashedPassword } });
     }
+    async findUserByEmail(email: string): Promise<User | null> {
+        return await prisma.user.findUnique({ where: { email } });
+      }
+    
+      async updatePassword(email: string, hashedPassword: string): Promise<User> {
+        return await prisma.user.update({
+          where: { email },
+          data: { hashedPassword },
+        });
+      }
+    
+      async deleteToken(tokenId: string): Promise<any> {
+        return await prisma.verificationToken.delete({
+          where: { id: tokenId },
+        });
+      }
 }

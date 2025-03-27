@@ -30,4 +30,17 @@ export class ReviewsRepository implements IReviewsRepository {
     async findReviewById(reviewId: string): Promise<any | null> {
         return await prisma.review.findUnique({ where: { id: reviewId } });
     }
+    async findListingById(listingId: string): Promise<any | null> {
+        return await prisma.listing.findUnique({ where: { id: listingId } });
+      }
+    
+      async createReviewResponse(params: { reviewId: string; userId: string; content: string }): Promise<any> {
+        return await prisma.reviewResponse.create({ data: params });
+      }
+    
+      async findReviewByReservation(userId: string, reservationId: string): Promise<any | null> {
+        return await prisma.review.findFirst({
+          where: { userId, reservationId },
+        });
+      }
 }

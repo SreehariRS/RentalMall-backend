@@ -97,6 +97,12 @@ router.route("/update-about").post(verifyUser, async (req: Request, res: Respons
 router.route("/change-password").post(verifyUser, async (req: Request, res: Response) => {
     await passwordController.changePassword(req, res);
 });
+router.post("/forgot-password", async (req: Request, res: Response) => {
+    await passwordController.forgotPassword(req, res);
+  });
+  router.post("/reset-password", async (req: Request, res: Response) => {
+    await passwordController.resetPassword(req, res);
+  });
 
 // Listings routes
 router.route("/listings").get(async (req: Request, res: Response) => {
@@ -108,6 +114,15 @@ router.route("/:listingId").get(async (req: Request, res: Response) => {
 router.route("/listings").post(verifyUser, async (req: Request, res: Response) => {
     await listingsController.createListing(req, res);
 });
+router.put("/listings/:listingId/price", verifyUser, async (req: Request, res: Response) => {
+    await listingsController.updatePrice(req, res);
+  });
+  router.delete("/listings/:listingId", verifyUser, async (req: Request, res: Response) => {
+    await listingsController.deleteListing(req, res);
+  });
+  router.put("/listings/:listingId", verifyUser, async (req: Request, res: Response) => {
+    await listingsController.updateListing(req, res);
+  });
 
 // Reservations routes
 router.route("/reservation").post(verifyUser, async (req: Request, res: Response) => {

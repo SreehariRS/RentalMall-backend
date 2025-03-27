@@ -51,4 +51,34 @@ export class ListingsRepository implements IListingsRepository {
             },
         });
     }
+    async updatePrice(listingId: string, userId: string, price: number): Promise<{ count: number }> {
+        return await prisma.listing.updateMany({
+          where: { id: listingId, userId },
+          data: { price },
+        });
+      }
+    
+      async findReservationsByListingId(listingId: string): Promise<any[]> {
+        return await prisma.reservation.findMany({
+          where: { listingId },
+          include: { user: { select: { id: true, email: true } }, listing: true },
+        });
+      }
+    
+      async createNotification(params: any): Promise<any> {
+        return await prisma.notification.create({ data: params });
+      }
+    
+      async deleteListing(listingId: string, userId: string): Promise<{ count: number }> {
+        return await prisma.listing.deleteMany({
+          where: { id: listingId, userId },
+        });
+      }
+    
+      async updateListing(listingId: string, userId: string, data: any): Promise<{ count: number }> {
+        return await prisma.listing.updateMany({
+          where: { id: listingId, userId },
+          data,
+        });
+      }
 }

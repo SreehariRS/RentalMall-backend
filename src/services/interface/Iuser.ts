@@ -108,6 +108,9 @@ export interface IListingsService {
     getListingsByCategory(params: FilterListingsParams): Promise<any>;
     getListingById(listingId: string): Promise<any>;
     createListing(params: CreateListingParams): Promise<any>;
+    updatePrice(listingId: string, userId: string, price: number): Promise<any>;
+   deleteListing(listingId: string, userId: string): Promise<any>;
+updateListing(listingId: string, userId: string, data: any): Promise<any>;
 }
 
 export interface IMessagesService {
@@ -129,6 +132,8 @@ export interface IOfferService {
 
 export interface IPasswordService {
     changePassword(userId: string, currentPassword: string, newPassword: string): Promise<any>;
+    forgotPassword(email: string): Promise<string>;
+  resetPassword(token: string, password: string): Promise<string>;
 }
 
 export interface IPaymentService {
@@ -148,7 +153,14 @@ export interface IReservationsService {
 
 export interface IReviewsService {
     createReview(params: CreateReviewParams): Promise<any>;
+    createReviewOrResponse(userId: string, params: any): Promise<any>;
     updateReview(params: UpdateReviewParams, currentUserId: string): Promise<any>;
     deleteReview(params: DeleteReviewParams, currentUserId: string): Promise<any>;
     getReviews(params: GetReviewsParams): Promise<any>;
 }
+export interface IForgotPasswordService {
+    forgotPassword(email: string): Promise<string>;
+  }
+  export interface IResetPasswordService {
+    resetPassword(token: string, password: string): Promise<string>;
+  }

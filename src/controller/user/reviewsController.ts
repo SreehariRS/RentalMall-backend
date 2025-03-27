@@ -58,4 +58,25 @@ export class ReviewsController implements IReviewsController {
             return res.status(500).json({ message: errorMessage });
         }
     }
+    async createReviewOrResponse(req: Request, res: Response): Promise<Response> {
+        const currentUser = (req as any).user;
+        if (!currentUser) {
+          return res.status(401).json({ error: "Unauthorized" });
+        }
+        const { listingId, reservationId, rating, title, content, responseToReviewId } = req.body;
+        try {
+          const result = await this.reviewsService.createReviewOrResponse(currentUser.id, {
+            listingId,
+            reservationId,
+            rating,
+            title,
+            content,
+            responseToReviewId,
+          });
+          return res.status(200).json(result);
+        } catch (error: any) {
+          console.error("Error in createReviewOrResponse:", error);
+          return res.status(error.status || 500).json({ error: error.message });
+        }
+      }
 }

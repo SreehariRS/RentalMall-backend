@@ -1,6 +1,5 @@
-// src/repositories/interface/IUserRepositories.ts
 
-import { User, Listing, Reservation, Message, Conversation, Notification, Review, Wallet, CancelledReservation } from "@prisma/client";
+import { User, Listing, Reservation, Message, Conversation, Notification, Review, Wallet, CancelledReservation, ReviewResponse } from "@prisma/client";
 import {
     CreateListingParams, CreateMessageParams, CreateNotificationParams, CreateReservationParams,
     CreateReviewParams, DeleteNotificationParams, DeleteReviewParams, FilterListingsParams,
@@ -15,9 +14,18 @@ export interface IFavoritesRepository {
 
 export interface IListingsRepository {
     getListingsByCategory(params: FilterListingsParams): Promise<Listing[]>;
+    updatePrice(listingId: string, userId: string, price: number): Promise<{ count: number }>;
     findById(id: string): Promise<(Listing & { user: User | null }) | null>;
     createListing(data: CreateListingParams): Promise<Listing>;
+    findReservationsByListingId(listingId: string): Promise<(Reservation & { user: { id: string; email: string | null }; listing: Listing })[]>;
+  createNotification(params: { userId: string; message: string; type: string; isRead: boolean }): Promise<Notification>;
+  deleteListing(listingId: string, userId: string): Promise<{ count: number }>;
+  updateListing(listingId: string, userId: string, data: any): Promise<{ count: number }>;
 }
+export interface IResetPasswordRepository {
+    updatePassword(email: string, hashedPassword: string): Promise<any>;
+    deleteToken(tokenId: string): Promise<any>;
+  }
 
 export interface IMessagesRepository {
     createMessage(params: CreateMessageParams): Promise<Message & { seen: User[]; sender: User }>;
@@ -38,6 +46,9 @@ export interface IOfferRepository {
 
 export interface IPasswordRepository {
     changePassword(userId: string, currentPassword: string, newPassword: string): Promise<User>;
+    findUserByEmail(email: string): Promise<User | null>;
+  updatePassword(email: string, hashedPassword: string): Promise<User>;
+  deleteToken(tokenId: string): Promise<any>;
 }
 
 export interface IPaymentRepository {
@@ -70,6 +81,9 @@ export interface IReservationsRepository {
 }
 
 export interface IReviewsRepository {
+    findListingById(listingId: string): Promise<Listing | null>;
+    createReviewResponse(params: { reviewId: string; userId: string; content: string }): Promise<ReviewResponse>;
+    findReviewByReservation(userId: string, reservationId: string): Promise<Review | null>;
     createReview(params: CreateReviewParams): Promise<Review>;
     updateReview(params: UpdateReviewParams): Promise<Review>;
     deleteReview(params: DeleteReviewParams): Promise<Review>;
@@ -86,3 +100,6 @@ export interface IReviewsRepository {
     }[]>;
     findReviewById(reviewId: string): Promise<Review | null>;
 }
+export interface IForgotPasswordRepository {
+    findUserByEmail(email: string): Promise<any | null>;
+  }

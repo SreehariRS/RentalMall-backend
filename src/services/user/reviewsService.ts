@@ -8,6 +8,35 @@ export class ReviewsService implements IReviewsService {
     constructor(reviewsRepository: IReviewsRepository) {
         this.reviewsRepository = reviewsRepository;
     }
+    async createReviewOrResponse(userId: string, params: any): Promise<any> {
+        const { listingId, reservationId, rating, title, content, responseToReviewId } = params;
+        if (responseToReviewId) {
+          const listing = await this.reviewsRepository.findListingById(listingId);
+          if (!listing || listing.userId !== userId) {
+            throw { status: 403, message: "You can only respond to reviews on your own listings" };
+          }
+          return await this.reviewsRepository.createReviewResponse({
+            reviewId: responseToReviewId,
+            userId,
+            content,
+          });
+        }
+        if (!listingId || !reservationId || !rating || !title || !content) {
+          throw { status: 400, message: "Missing required fields" };
+        }
+        const existingReview = await this.reviewsRepository.findReviewByReservation(userId, reservationId);
+        if (existingReview) {
+          throw { status: 409, message: "You have already reviewed this reservation" };
+        }
+        return await this.reviewsRepository.createReview({
+          userId,
+          listingId,
+          reservationId,
+          rating,
+          title,
+          content,
+        });
+      }
 
     async createReview(params: CreateReviewParams): Promise<any> {
         const existingReview = await this.reviewsRepository.findReviewById(params.reservationId);

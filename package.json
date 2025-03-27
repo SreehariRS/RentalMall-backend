@@ -32,6 +32,8 @@
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0",
     "razorpay": "^2.9.5",
+    "resend": "^4.2.0",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
@@ -46,6 +48,7 @@
     "@types/mongodb": "^4.0.7",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.10.2",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "eslint": "^9.17.0",
     "globals": "^15.14.0",

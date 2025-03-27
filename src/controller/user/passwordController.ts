@@ -22,4 +22,31 @@ export class PasswordController implements IPasswordController {
             return res.status(500).json({ error: error.message });
         }
     }
+    async forgotPassword(req: Request, res: Response): Promise<Response> {
+        try {
+          const { email } = req.body;
+          if (!email) {
+            return res.status(400).json({ error: "Email is required" });
+          }
+          const message = await this.passwordService.forgotPassword(email);
+          return res.status(200).json({ message });
+        } catch (error: unknown) {
+          console.error("Error in forgotPassword:", error);
+          return res.status(500).json({ error: "Something went wrong. Please try again." });
+        }
+      }
+    
+      async resetPassword(req: Request, res: Response): Promise<Response> {
+        try {
+          const { token, password } = req.body;
+          if (!token || !password) {
+            return res.status(400).json({ error: "Token and password are required" });
+          }
+          const message = await this.passwordService.resetPassword(token, password);
+          return res.status(200).json({ message });
+        } catch (error: unknown) {
+          console.error("Error in resetPassword:", error);
+          return res.status(500).json({ error: "Something went wrong. Please try again." });
+        }
+      }
 }

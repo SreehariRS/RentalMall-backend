@@ -9,16 +9,20 @@ export default class UserRepository implements IUserRepository {
       const skip = (page - 1) * limit;
 
       // Build where clause for search
-      const where: Prisma.UserWhereInput = search
+      const where: Prisma.UserWhereInput = search.trim()
         ? {
             OR: [
-              { name: { contains: search, mode: "insensitive" as Prisma.QueryMode } },
-              { email: { contains: search, mode: "insensitive" as Prisma.QueryMode } },
+              { name: { contains: search.trim(), mode: "insensitive" as Prisma.QueryMode } },
+              { email: { contains: search.trim(), mode: "insensitive" as Prisma.QueryMode } },
             ],
           }
         : {};
 
+      console.log("Prisma query where clause:", where); // Debug log
+
       const total = await prismaInstance.user.count({ where });
+      console.log("Total users count:", total); // Debug log
+
       const users = await prismaInstance.user.findMany({
         where,
         skip,
@@ -26,6 +30,8 @@ export default class UserRepository implements IUserRepository {
         select: { id: true, name: true, email: true, isBlocked: true, isRestricted: true, image: true },
         orderBy: { createdAt: "desc" },
       });
+
+      console.log("Fetched users:", users); // Debug log
 
       const formattedUsers = users.map((user) => ({
         id: user.id,

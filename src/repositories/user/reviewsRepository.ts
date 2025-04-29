@@ -1,4 +1,3 @@
-// src/repositories/user/reviewsRepository.ts
 
 import prisma from "../../libs/prismadb";
 import { CreateReviewParams, UpdateReviewParams, DeleteReviewParams, GetReviewsParams } from "../../services/interface/Iuser";

@@ -1,4 +1,3 @@
-// src/repositories/user/notificationsRepository.ts
 
 import prisma from "../../libs/prismadb";
 import { DeleteNotificationParams, GetNotificationsParams, CreateNotificationParams } from "../../services/interface/Iuser";

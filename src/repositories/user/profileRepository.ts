@@ -1,4 +1,3 @@
-// src/repositories/user/profileRepository.ts
 
 import { User } from "@prisma/client";
 import prisma from "../../libs/prismadb";

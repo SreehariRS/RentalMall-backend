@@ -1,4 +1,3 @@
-// src/repositories/admin/dashboardRepository.ts
 
 import prismaInstance from "../../libs/prismadb";
 import { DashboardStats } from "../../services/interface/Iadmin";

@@ -1,4 +1,3 @@
-// src/repositories/user/messagesRepository.ts
 
 import prisma from "../../libs/prismadb";
 import { CreateMessageParams, MarkMessageAsSeenParams } from "../../services/interface/Iuser";

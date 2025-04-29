@@ -1,4 +1,4 @@
-// src/repositories/user/paymentRepository.ts
+
 
 import { razorpay } from "../../config/razorPay";
 import { BaseRepository } from "../baseRepository";

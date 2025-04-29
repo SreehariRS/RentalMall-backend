@@ -1,4 +1,3 @@
-// src/repositories/admin/hostRepository.ts
 import prismaInstance from "../../libs/prismadb";
 import { PaginatedResponse } from "../../services/interface/Iadmin";
 import { IHostRepository } from "../interface/IadminRepositories";

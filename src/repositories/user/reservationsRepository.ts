@@ -1,4 +1,3 @@
-// src/repositories/user/reservationsRepository.ts
 
 import prisma from "../../libs/prismadb";
 import { CreateReservationParams, CancelReservationParams, WalletUpdateParams, CreateNotificationParams } from "../../services/interface/Iuser";

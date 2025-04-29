@@ -1,4 +1,3 @@
-// src/repositories/admin/reservationRepository.ts
 
 import prismaInstance from "../../libs/prismadb";
 import { PaginatedResponse, Reservation } from "../../services/interface/Iadmin";

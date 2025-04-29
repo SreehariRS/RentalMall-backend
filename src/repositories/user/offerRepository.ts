@@ -1,4 +1,3 @@
-// src/repositories/user/offerRepository.ts
 
 import prisma from "../../libs/prismadb";
 import { UpdateOfferPriceParams } from "../../services/interface/Iuser";

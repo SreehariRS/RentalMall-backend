@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 
 export interface IAuthController {
@@ -9,6 +8,8 @@ export interface IUserController {
     getAllUsers(req: Request, res: Response): Promise<void>;
     blockUser(req: Request, res: Response): Promise<void>;
     unblockUser(req: Request, res: Response): Promise<void>;
+    restrictHost(req: Request, res: Response): Promise<void>;
+    unrestrictHost(req: Request, res: Response): Promise<void>;
 }
 
 export interface IReservationController {

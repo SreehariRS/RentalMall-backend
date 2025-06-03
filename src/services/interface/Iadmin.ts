@@ -7,12 +7,16 @@ export interface Admin {
   refreshToken?: string;
 }
 
+export interface INotificationService {
+  sendNotification(userId: string, message: string, type: string): Promise<void>;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
   isBlocked: boolean;
-  isRestricted: boolean;
+  isRestricted: boolean; 
   image: string | null;
 }
 
@@ -53,12 +57,8 @@ export interface IAuthService {
   refreshToken(refreshToken: string): Promise<{ accessToken: string } | null>;
 }
 
-export interface INotificationService {
-  sendNotification(userId: string, message: string, type: string): Promise<void>;
-}
-
 export interface IUserService {
-  getAllUsers(page: number, limit: number, search?: string): Promise<PaginatedResponse<User>>;
+  getAllUsers(page: number, limit: number, searchQuery?: string): Promise<PaginatedResponse<User>>;
   blockUser(userId: string): Promise<User | null>;
   unblockUser(userId: string): Promise<User | null>;
   restrictHost(userId: string): Promise<User | null>;

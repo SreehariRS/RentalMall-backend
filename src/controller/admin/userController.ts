@@ -13,8 +13,8 @@ export class UserController implements IUserController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 8;
-      const search = req.query.search as string || "";
-      const paginatedData = await this.userService.getAllUsers(page, limit, search);
+      const searchQuery = req.query.search as string | undefined; // Add search query
+      const paginatedData = await this.userService.getAllUsers(page, limit, searchQuery);
       res.status(200).json(paginatedData);
     } catch (error) {
       let errorMessage = "An unexpected error occurred while fetching users";

@@ -8,8 +8,8 @@ export default class UserService implements IUserService {
     this.userRepository = userRepository;
   }
 
-  async getAllUsers(page: number, limit: number, search: string = ""): Promise<PaginatedResponse<User>> {
-    return await this.userRepository.getAllUsers(page, limit, search);
+  async getAllUsers(page: number, limit: number, searchQuery?: string): Promise<PaginatedResponse<User>> {
+    return await this.userRepository.getAllUsers(page, limit, searchQuery);
   }
 
   async blockUser(userId: string): Promise<User | null> {

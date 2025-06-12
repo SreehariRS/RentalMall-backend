@@ -1,3 +1,4 @@
+
 import prismaInstance from "../../libs/prismadb";
 import { PaginatedResponse, Reservation } from "../../services/interface/Iadmin";
 import { IReservationRepository } from "../interface/IadminRepositories";
@@ -6,41 +7,21 @@ export default class ReservationRepository implements IReservationRepository {
     async getAllReservations(page: number = 1, limit: number = 8): Promise<PaginatedResponse<Reservation>> {
         try {
             const skip = (page - 1) * limit;
-
-            // Get total count of valid reservations
-            const total = await prismaInstance.reservation.count({
-                where: {
-                    listing: {
-                        isNot: {}, // Ensure listing exists (non-empty object implies existence)
-                    },
-                },
-            });
-
-            // Fetch reservations with related user and listing data
+            const total = await prismaInstance.reservation.count();
             const reservations = await prismaInstance.reservation.findMany({
                 skip,
                 take: limit,
-                where: {
-                    listing: {
-                        isNot: {}, // Ensure listing exists
-                    },
-                },
-                include: {
-                    user: {
-                        select: { name: true },
-                    },
-                    listing: {
-                        select: {
-                            title: true,
-                            user: { select: { name: true } },
-                        },
-                    },
+                select: {
+                    id: true,
+                    startDate: true,
+                    endDate: true,
+                    user: { select: { name: true } },
+                    listing: { select: { title: true, user: { select: { name: true } } } },
                 },
                 orderBy: { createdAt: "desc" },
             });
 
-            // Format reservations to match the Reservation interface
-            const formattedReservations: Reservation[] = reservations.map((reservation) => ({
+            const formattedReservations = reservations.map((reservation) => ({
                 id: reservation.id,
                 guestName: reservation.user?.name ?? "Unknown Guest",
                 startDate: reservation.startDate.toISOString(),

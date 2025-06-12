@@ -7,11 +7,11 @@ export default class ReservationRepository implements IReservationRepository {
         try {
             const skip = (page - 1) * limit;
 
-            // Get total count of valid reservations (with existing listings)
+            // Get total count of valid reservations
             const total = await prismaInstance.reservation.count({
                 where: {
                     listing: {
-                        id: { not: undefined }, // Ensure listing exists
+                        isNot: {}, // Ensure listing exists (non-empty object implies existence)
                     },
                 },
             });
@@ -22,7 +22,7 @@ export default class ReservationRepository implements IReservationRepository {
                 take: limit,
                 where: {
                     listing: {
-                        id: { not: undefined }, // Ensure listing exists
+                        isNot: {}, // Ensure listing exists
                     },
                 },
                 include: {

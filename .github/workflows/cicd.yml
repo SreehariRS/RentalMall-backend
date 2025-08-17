@@ -38,12 +38,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Debug SSH Connection
+        run: |
+          echo "Testing SSH connectivity to ${{ secrets.SERVER_IP }}"
+          ssh -v -o ConnectTimeout=10 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} echo "Connection successful" || echo "Connection failed"
+
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          timeout: 30s
           script: |
             docker stop rentalmall-container || true
             docker rm rentalmall-container || true

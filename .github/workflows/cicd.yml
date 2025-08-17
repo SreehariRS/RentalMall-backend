@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Changed to use your self-hosted runner
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,38 +35,41 @@ jobs:
           docker push sreeharirs/rentalmall:latest
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Changed to use your self-hosted runner
     needs: build
     steps:
-      - name: Debug SSH Connection
+      - name: Deploy to server (Local Deployment)
         run: |
-          echo "Testing SSH connectivity to ${{ secrets.SERVER_IP }}"
-          ssh -v -o ConnectTimeout=15 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} echo "Connection successful" || echo "Connection failed: $?"
+          # Stop and remove existing container
+          docker stop rentalmall-container || true
+          docker rm rentalmall-container || true
+          
+          # Pull the latest image
+          docker pull sreeharirs/rentalmall:latest
+          
+          # Run the new container
+          docker run -d -p 8080:8080 --name rentalmall-container \
+            --env CLIENT_URL="https://www.rentalmall.site" \
+            --env NEXT_PUBLIC_PUSHER_APP_KEY="e99687abe201c87d979b" \
+            --env PRISMA_PASSWORD="${{ secrets.PRISMA_PASSWORD }}" \
+            --env PUSHER_APP_ID="1947042" \
+            --env PUSHER_SECRET="8de542e5dde9f45f2e25" \
+            --env PUSHER_CLUSTER="ap2" \
+            --env RAZORPAY_KEY_ID="rzp_test_rJ0yPg6ZIlUOvq" \
+            --env RAZORPAY_KEY_SECRET="ufxbfK2FqmH9NHjGPULk8uZf" \
+            --env DATABASE_URL="mongodb+srv://sreehari:sreehari@cluster0.x2o6n.mongodb.net/test?retryWrites=true&w=majority" \
+            --env JWT_SECRET="NEXTAUTH_SECRET" \
+            --env PORT=8080 \
+            --restart unless-stopped \
+            sreeharirs/rentalmall:latest
 
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          timeout: 60s
-          debug: true
-          script: |
-            docker stop rentalmall-container || true
-            docker rm rentalmall-container || true
-            docker pull sreeharirs/rentalmall:latest
-            docker run -d -p 8080:8080 --name rentalmall-container \
-              --env CLIENT_URL="https://www.rentalmall.site" \
-              --env NEXT_PUBLIC_PUSHER_APP_KEY="e99687abe201c87d979b" \
-              --env PRISMA_PASSWORD="${{ secrets.PRISMA_PASSWORD }}" \
-              --env PUSHER_APP_ID="1947042" \
-              --env PUSHER_SECRET="8de542e5dde9f45f2e25" \
-              --env PUSHER_CLUSTER="ap2" \
-              --env RAZORPAY_KEY_ID="rzp_test_rJ0yPg6ZIlUOvq" \
-              --env RAZORPAY_KEY_SECRET="ufxbfK2FqmH9NHjGPULk8uZf" \
-              --env DATABASE_URL="mongodb+srv://sreehari:sreehari@cluster0.x2o6n.mongodb.net/test?retryWrites=true&w=majority" \
-              --env JWT_SECRET="NEXTAUTH_SECRET" \
-              --env PORT=8080 \
-              --restart unless-stopped \
-              sreeharirs/rentalmall:latest
+      - name: Verify deployment
+        run: |
+          sleep 10
+          docker ps | grep rentalmall-container
+          echo "Deployment completed successfully!"
+
+      - name: Health check
+        run: |
+          sleep 15
+          curl -f http://localhost:8080/health || echo "Health check failed, but container might still be starting"

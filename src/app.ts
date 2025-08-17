@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 
 const allowedOrigins = [
-  "http://localhost:3000",
+   "http://localhost:3000",
   "https://www.rentalmall.site",
   "https://rentalmall.site",
 ];
@@ -28,7 +28,7 @@ const normalizeUrl = (url: string | undefined): string => {
 };
 
 
-const corsOrigin = normalizeUrl(process.env.CLIENT_URL) || "http://localhost:3000";
+const corsOrigin = normalizeUrl(process.env.CLIENT_URL) ||  "http://localhost:3000";
 
 
 // Middleware

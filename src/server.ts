@@ -1,11 +1,12 @@
-import app from "./app";
-import prisma from "./libs/prismadb";
 import dotenv from "dotenv";
-import { Server } from "http";
 
 dotenv.config();
 
-const PORT = Number(process.env.PORT) || 6000;
+import app from "./app";
+import prisma from "./libs/prismadb";
+import { Server } from "http";
+
+const PORT = Number(process.env.PORT) || 8080; 
 
 const startServer = async () => {
   try {
@@ -21,7 +22,7 @@ const startServer = async () => {
       console.log(`Received ${signal}. Shutting down server...`);
       
       try {
-        await prisma.$disconnect();
+        await prisma.$disconnect(); 
         console.log("Prisma connection closed.");
       } catch (error) {
         console.error("Error closing Prisma connection:", error);

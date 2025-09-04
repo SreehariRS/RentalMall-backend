@@ -1,3 +1,13 @@
+import { 
+  AdminLoginResponseDto, 
+  AdminRefreshResponseDto, 
+  UserListResponseDto, 
+  UserResponseDto, 
+  ReservationListResponseDto, 
+  HostListResponseDto, 
+  DashboardStatsResponseDto 
+} from "../../dto/admin";
+
 export interface Admin {
   id: string;
   email: string;
@@ -53,26 +63,26 @@ export interface DashboardStats {
 // Service Interfaces
 export interface IAuthService {
   findByEmail(email: string): Promise<Admin | null>;
-  login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string } | null>;
-  refreshToken(refreshToken: string): Promise<{ accessToken: string } | null>;
+  login(email: string, password: string): Promise<AdminLoginResponseDto | null>;
+  refreshToken(refreshToken: string): Promise<AdminRefreshResponseDto | null>;
 }
 
 export interface IUserService {
-  getAllUsers(page: number, limit: number, searchQuery?: string): Promise<PaginatedResponse<User>>;
-  blockUser(userId: string): Promise<User | null>;
-  unblockUser(userId: string): Promise<User | null>;
-  restrictHost(userId: string): Promise<User | null>;
-  unrestrictHost(userId: string): Promise<User | null>;
+  getAllUsers(page: number, limit: number, searchQuery?: string): Promise<UserListResponseDto>;
+  blockUser(userId: string): Promise<UserResponseDto | null>;
+  unblockUser(userId: string): Promise<UserResponseDto | null>;
+  restrictHost(userId: string): Promise<UserResponseDto | null>;
+  unrestrictHost(userId: string): Promise<UserResponseDto | null>;
 }
 
 export interface IReservationService {
-  getAllReservations(page: number, limit: number): Promise<PaginatedResponse<Reservation>>;
+  getAllReservations(page: number, limit: number): Promise<ReservationListResponseDto>;
 }
 
 export interface IHostService {
-  getAllHosts(page: number, limit: number): Promise<PaginatedResponse<{ id: string; name: string; listingCount: number; isRestricted: boolean }>>;
+  getAllHosts(page: number, limit: number): Promise<HostListResponseDto>;
 }
 
 export interface IDashboardService {
-  getDashboardStats(): Promise<DashboardStats>;
+  getDashboardStats(): Promise<DashboardStatsResponseDto>;
 }

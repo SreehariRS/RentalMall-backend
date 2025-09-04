@@ -1,3 +1,15 @@
+import {
+    ListingListResponseDto,
+    ListingResponseDto,
+    UpdateMessageResponseDto,
+    DeleteResultDto,
+} from "../../dto/user/ListingsDto";
+import { MessageDto } from "../../dto/user/MessagesDto";
+import { NotificationDto } from "../../dto/user/NotificationsDto";
+import { UserProfileDto } from "../../dto/user/ProfileDto";
+import { UpdateOfferPriceResponseDto } from "../../dto/user/OffersDto";
+import { ReservationDto, CancelReservationResponseDto } from "../../dto/user/ReservationsDto";
+import { ReviewDto } from "../../dto/user/ReviewsDto";
 
 export interface CreateListingParams {
     locationValues: any;
@@ -92,12 +104,6 @@ export interface GetReviewsParams {
     listingId: string;
 }
 
-export interface UpdateOfferPriceParams {
-    listingId: string;
-    userId: string;
-    offerPrice: number | null;
-}
-
 // Service Interfaces
 export interface IFavoritesService {
     addToFavorites(userId: string, listingId: string): Promise<any>;
@@ -105,16 +111,16 @@ export interface IFavoritesService {
 }
 
 export interface IListingsService {
-    getListingsByCategory(params: FilterListingsParams): Promise<any>;
-    getListingById(listingId: string): Promise<any>;
-    createListing(params: CreateListingParams): Promise<any>;
-    updatePrice(listingId: string, userId: string, price: number): Promise<any>;
-   deleteListing(listingId: string, userId: string): Promise<any>;
-updateListing(listingId: string, userId: string, data: any): Promise<any>;
+    getListingsByCategory(params: FilterListingsParams): Promise<ListingListResponseDto>;
+    getListingById(listingId: string): Promise<ListingResponseDto | null>;
+    createListing(params: CreateListingParams): Promise<ListingResponseDto>;
+    updatePrice(listingId: string, userId: string, price: number): Promise<UpdateMessageResponseDto>;
+    deleteListing(listingId: string, userId: string): Promise<DeleteResultDto>;
+    updateListing(listingId: string, userId: string, data: any): Promise<UpdateMessageResponseDto>;
 }
 
 export interface IMessagesService {
-    createMessage(params: CreateMessageParams): Promise<any>;
+    createMessage(params: CreateMessageParams): Promise<MessageDto>;
     updateConversationLastMessage(conversationId: string, messageId: string): Promise<any>;
     markMessageAsSeen(params: MarkMessageAsSeenParams): Promise<any>;
 }
@@ -122,18 +128,22 @@ export interface IMessagesService {
 export interface INotificationsService {
     getNotificationCount(userId: string): Promise<number>;
     deleteNotification(params: DeleteNotificationParams): Promise<any>;
-    getNotifications(params: GetNotificationsParams): Promise<any>;
-    createNotification(params: CreateNotificationParams): Promise<any>;
+    getNotifications(params: GetNotificationsParams): Promise<NotificationDto[]>;
+    createNotification(params: CreateNotificationParams): Promise<NotificationDto>;
 }
 
 export interface IOfferService {
-    updateOfferPrice(params: UpdateOfferPriceParams): Promise<any>;
+    updateOfferPrice(params: {
+        listingId: string;
+        userId: string;
+        offerPrice: number | null;
+    }): Promise<UpdateOfferPriceResponseDto>;
 }
 
 export interface IPasswordService {
     changePassword(userId: string, currentPassword: string, newPassword: string): Promise<any>;
     forgotPassword(email: string): Promise<string>;
-  resetPassword(token: string, password: string): Promise<string>;
+    resetPassword(token: string, password: string): Promise<string>;
 }
 
 export interface IPaymentService {
@@ -141,26 +151,26 @@ export interface IPaymentService {
 }
 
 export interface IProfileService {
-    findByEmail(email: string): Promise<any>;
-    updateProfileImage(userId: string, imageUrl: string): Promise<any>;
-    updateAbout(userId: string, about: string): Promise<any>;
+    findByEmail(email: string): Promise<UserProfileDto | null>;
+    updateProfileImage(userId: string, imageUrl: string): Promise<UserProfileDto>;
+    updateAbout(userId: string, about: string): Promise<UserProfileDto>;
 }
 
 export interface IReservationsService {
-    createReservation(params: CreateReservationParams): Promise<any>;
-    cancelReservation(params: CancelReservationParams, currentUserId: string): Promise<any>;
+    createReservation(params: CreateReservationParams): Promise<ReservationDto>;
+    cancelReservation(params: CancelReservationParams, currentUserId: string): Promise<CancelReservationResponseDto>;
 }
 
 export interface IReviewsService {
-    createReview(params: CreateReviewParams): Promise<any>;
+    createReview(params: CreateReviewParams): Promise<ReviewDto>;
     createReviewOrResponse(userId: string, params: any): Promise<any>;
-    updateReview(params: UpdateReviewParams, currentUserId: string): Promise<any>;
+    updateReview(params: UpdateReviewParams, currentUserId: string): Promise<ReviewDto>;
     deleteReview(params: DeleteReviewParams, currentUserId: string): Promise<any>;
     getReviews(params: GetReviewsParams): Promise<any>;
 }
 export interface IForgotPasswordService {
     forgotPassword(email: string): Promise<string>;
-  }
-  export interface IResetPasswordService {
+}
+export interface IResetPasswordService {
     resetPassword(token: string, password: string): Promise<string>;
-  }
+}

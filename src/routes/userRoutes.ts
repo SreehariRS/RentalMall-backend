@@ -1,4 +1,3 @@
-
 import express, { Request, Response } from "express";
 import { FavoritesController } from "../controller/user/favoritesController";
 import { ProfileController } from "../controller/user/profileController";
@@ -33,6 +32,7 @@ import { PaymentRepository } from "../repositories/user/paymentRepository";
 import verifyUser from "../middleware/verifyUser";
 import { IFavoritesRepository, IListingsRepository, IMessagesRepository, INotificationsRepository, IOfferRepository, IPasswordRepository, IPaymentRepository, IProfileRepository, IReservationsRepository, IReviewsRepository } from "../repositories/interface/IUserRepositories";
 import { IFavoritesService, IListingsService, IMessagesService, INotificationsService, IOfferService, IPasswordService, IPaymentService, IProfileService, IReservationsService, IReviewsService } from "../services/interface/Iuser";
+import { USER_ROUTES } from "../config/routes";
 
 const router = express.Router();
 
@@ -72,9 +72,8 @@ const reviewsController = new ReviewsController(reviewsService);
 const offerController = new OfferController(offerService);
 const paymentController = new PaymentController(paymentService);
 
-
 // Favorites routes
-router.route("/favorites")
+router.route(USER_ROUTES.FAVORITES)
     .post(async (req: Request, res: Response) => {
         await favoritesController.addFavorite(req, res);
     })
@@ -83,101 +82,101 @@ router.route("/favorites")
     });
 
 // Profile routes
-router.route("/get-profile").get(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.GET_PROFILE).get(verifyUser, async (req: Request, res: Response) => {
     await profileController.getProfile(req, res);
 });
-router.route("/update-profile-image").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.UPDATE_PROFILE_IMAGE).post(verifyUser, async (req: Request, res: Response) => {
     await profileController.updateProfileImage(req, res);
 });
-router.route("/update-about").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.UPDATE_ABOUT).post(verifyUser, async (req: Request, res: Response) => {
     await profileController.updateAbout(req, res);
 });
 
 // Password routes
-router.route("/change-password").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.CHANGE_PASSWORD).post(verifyUser, async (req: Request, res: Response) => {
     await passwordController.changePassword(req, res);
 });
-router.post("/forgot-password", async (req: Request, res: Response) => {
+router.post(USER_ROUTES.FORGOT_PASSWORD, async (req: Request, res: Response) => {
     await passwordController.forgotPassword(req, res);
-  });
-  router.post("/reset-password", async (req: Request, res: Response) => {
+});
+router.post(USER_ROUTES.RESET_PASSWORD, async (req: Request, res: Response) => {
     await passwordController.resetPassword(req, res);
-  });
+});
 
 // Listings routes
-router.route("/listings").get(async (req: Request, res: Response) => {
+router.route(USER_ROUTES.LISTINGS).get(async (req: Request, res: Response) => {
     await listingsController.getListingsByCategory(req, res);
 });
-router.route("/:listingId").get(async (req: Request, res: Response) => {
+router.route(USER_ROUTES.LISTING_BY_ID).get(async (req: Request, res: Response) => {
     await listingsController.getListingById(req, res);
 });
-router.route("/listings").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.LISTINGS).post(verifyUser, async (req: Request, res: Response) => {
     await listingsController.createListing(req, res);
 });
-router.put("/listings/:listingId/price", verifyUser, async (req: Request, res: Response) => {
+router.put(USER_ROUTES.UPDATE_LISTING_PRICE, verifyUser, async (req: Request, res: Response) => {
     await listingsController.updatePrice(req, res);
-  });
-  router.delete("/listings/:listingId", verifyUser, async (req: Request, res: Response) => {
+});
+router.delete(USER_ROUTES.DELETE_LISTING, verifyUser, async (req: Request, res: Response) => {
     await listingsController.deleteListing(req, res);
-  });
-  router.put("/listings/:listingId", verifyUser, async (req: Request, res: Response) => {
+});
+router.put(USER_ROUTES.UPDATE_LISTING, verifyUser, async (req: Request, res: Response) => {
     await listingsController.updateListing(req, res);
-  });
+});
 
 // Reservations routes
-router.route("/reservation").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.CREATE_RESERVATION).post(verifyUser, async (req: Request, res: Response) => {
     await reservationsController.createReservation(req, res);
 });
-router.route("/reservations/:reservationId").delete(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.CANCEL_RESERVATION).delete(verifyUser, async (req: Request, res: Response) => {
     await reservationsController.cancelReservation(req, res);
 });
 
 // Messages routes
-router.route("/messages").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.MESSAGES).post(verifyUser, async (req: Request, res: Response) => {
     await messagesController.createMessage(req, res);
 });
-router.route("/messages/seen/:conversationId").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.MARK_MESSAGE_SEEN).post(verifyUser, async (req: Request, res: Response) => {
     await messagesController.markMessageAsSeen(req, res);
 });
-router.post("/conversations/:conversationId/messages", verifyUser, async (req: Request, res: Response) => {
+router.post(USER_ROUTES.CONVERSATION_MESSAGES, verifyUser, async (req: Request, res: Response) => {
     await messagesController.createMessage(req, res);
 });
 
 // Notifications routes
-router.route("/notification-count").get(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.NOTIFICATION_COUNT).get(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.getNotificationCount(req, res);
 });
-router.route("/notifications/:notificationId").delete(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.DELETE_NOTIFICATION).delete(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.deleteNotification(req, res);
 });
-router.route("/notifications").get(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.NOTIFICATIONS).get(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.getNotifications(req, res);
 });
-router.route("/notifications").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.NOTIFICATIONS).post(verifyUser, async (req: Request, res: Response) => {
     await notificationsController.createNotification(req, res);
 });
 
 // Reviews routes
-router.route("/reviews").post(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.REVIEWS).post(verifyUser, async (req: Request, res: Response) => {
     await reviewsController.createReview(req, res);
 });
-router.route("/reviews/:reviewId").put(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.UPDATE_REVIEW).put(verifyUser, async (req: Request, res: Response) => {
     await reviewsController.updateReview(req, res);
 });
-router.route("/reviews/:reviewId").delete(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.DELETE_REVIEW).delete(verifyUser, async (req: Request, res: Response) => {
     await reviewsController.deleteReview(req, res);
 });
-router.route("/reviews/:listingId").get(async (req: Request, res: Response) => {
+router.route(USER_ROUTES.GET_REVIEWS).get(async (req: Request, res: Response) => {
     await reviewsController.getReviews(req, res);
 });
 
 // Offer routes
-router.route("/listings/:listingId/offer").put(verifyUser, async (req: Request, res: Response) => {
+router.route(USER_ROUTES.UPDATE_OFFER_PRICE).put(verifyUser, async (req: Request, res: Response) => {
     await offerController.updateOfferPrice(req, res);
 });
 
 // Payment routes
-router.route("/order").post(async (req: Request, res: Response) => {
+router.route(USER_ROUTES.CREATE_ORDER).post(async (req: Request, res: Response) => {
     await paymentController.createOrder(req, res);
 });
 

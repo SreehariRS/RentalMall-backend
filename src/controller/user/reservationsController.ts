@@ -1,21 +1,23 @@
 import { Request, Response } from "express";
 import { IReservationsService } from "../../services/interface/Iuser";
 import { IReservationsController } from "../interface/IuserController";
+import { HttpStatusCodes } from "../../config/HttpStatusCodes";
+import { Messages } from "../../config/message";
 import { pusherServer } from "../../libs/pusher";
 
 export class ReservationsController implements IReservationsController {
-    private reservationsService: IReservationsService;
+    private _reservationsService: IReservationsService;
 
     constructor(reservationsService: IReservationsService) {
-        this.reservationsService = reservationsService;
+        this._reservationsService = reservationsService;
     }
 
     async createReservation(req: Request, res: Response): Promise<Response> {
         try {
-            const reservation = await this.reservationsService.createReservation(req.body);
-            return res.status(201).json(reservation);
+            const reservation = await this._reservationsService.createReservation(req.body);
+            return res.status(HttpStatusCodes.CREATED).json(reservation);
         } catch (error: any) {
-            return res.status(500).json({ error: error.message });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
     }
 
@@ -23,20 +25,23 @@ export class ReservationsController implements IReservationsController {
         try {
             const currentUser = (req as any).user;
             if (!currentUser) {
-                return res.status(401).json({ message: "Unauthorized" });
+                return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
             }
             const { reservationId } = req.params;
             if (!reservationId || typeof reservationId !== "string") {
-                return res.status(400).json({ message: "Invalid ID" });
+                return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: Messages.INVALID_ID });
             }
-            const result = await this.reservationsService.cancelReservation({ reservationId, userId: currentUser.id }, currentUser.id);
+            const result = await this._reservationsService.cancelReservation(
+                { reservationId, userId: currentUser.id },
+                currentUser.id
+            );
             await pusherServer.trigger(`user-${currentUser.email}-notifications`, "notification:new", {
-                message: "Your reservation has been canceled.",
+                message: Messages.RESERVATION_CANCELED_SUCCESS,
             });
-            return res.status(200).json(result);
+            return res.status(HttpStatusCodes.OK).json(result);
         } catch (error) {
             console.error("CANCEL_RESERVATION_ERROR", error);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.INTERNAL_SERVER_ERROR });
         }
     }
 }

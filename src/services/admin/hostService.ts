@@ -1,15 +1,17 @@
-
 import { IHostRepository } from "../../repositories/interface/IadminRepositories";
-import { IHostService, PaginatedResponse } from "../interface/Iadmin";
+import { IHostService } from "../interface/Iadmin";
+import { HostMapper } from "../../dto/mappers";
 
 export default class HostService implements IHostService {
-    private hostRepository: IHostRepository;
+  private _hostRepository: IHostRepository;
 
-    constructor(hostRepository: IHostRepository) {
-        this.hostRepository = hostRepository;
-    }
+  constructor(hostRepository: IHostRepository) {
+    this._hostRepository = hostRepository;
+  }
 
-    async getAllHosts(page: number, limit: number): Promise<PaginatedResponse<{ id: string; name: string; listingCount: number; isRestricted: boolean }>> {
-        return await this.hostRepository.getAllHosts(page, limit);
-    }
+  async getAllHosts(page: number, limit: number): Promise<import("../../dto/admin").HostListResponseDto> {
+    const paginatedHosts = await this._hostRepository.getAllHosts(page, limit);
+    // Use DTO mapper to return properly formatted response
+    return HostMapper.toHostListResponseDto(paginatedHosts);
+  }
 }

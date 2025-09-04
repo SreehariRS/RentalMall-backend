@@ -1,21 +1,17 @@
-
 import { IReservationRepository } from "../../repositories/interface/IadminRepositories";
-import { IReservationService, PaginatedResponse, Reservation } from "../interface/Iadmin";
+import { IReservationService, Reservation, PaginatedResponse } from "../interface/Iadmin";
+import { ReservationMapper } from "../../dto/mappers";
 
 export default class ReservationService implements IReservationService {
-    private reservationRepository: IReservationRepository;
+  private _reservationRepository: IReservationRepository;
 
-    constructor(reservationRepository: IReservationRepository) {
-        this.reservationRepository = reservationRepository;
-    }
+  constructor(reservationRepository: IReservationRepository) {
+    this._reservationRepository = reservationRepository;
+  }
 
-    async getAllReservations(page: number, limit: number): Promise<PaginatedResponse<Reservation>> {
-        const response = await this.reservationRepository.getAllReservations(page, limit);
-        return {
-            data: response.data,
-            total: response.total,
-            currentPage: page,
-            totalPages: response.totalPages,
-        };
-    }
+  async getAllReservations(page: number, limit: number): Promise<import("../../dto/admin").ReservationListResponseDto> {
+    const paginatedReservations = await this._reservationRepository.getAllReservations(page, limit);
+    // Use DTO mapper to return properly formatted response
+    return ReservationMapper.toReservationListResponseDto(paginatedReservations);
+  }
 }

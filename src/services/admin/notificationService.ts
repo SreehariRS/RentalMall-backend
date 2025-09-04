@@ -5,13 +5,13 @@ export interface INotificationService {
 }
 
 export default class NotificationService implements INotificationService {
-  private notificationRepository: INotificationRepository;
+  private _notificationRepository: INotificationRepository;
 
   constructor(notificationRepository: INotificationRepository) {
-    this.notificationRepository = notificationRepository;
+    this._notificationRepository = notificationRepository;
   }
 
   async sendNotification(userId: string, message: string, type: string): Promise<void> {
-    await this.notificationRepository.createNotification(userId, message, type);
+    await this._notificationRepository.createNotification(userId, message, type);
   }
 }

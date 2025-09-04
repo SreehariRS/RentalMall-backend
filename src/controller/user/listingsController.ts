@@ -1,38 +1,40 @@
 import { Request, Response } from "express";
 import { IListingsService } from "../../services/interface/Iuser";
 import { IListingsController } from "../interface/IuserController";
+import { HttpStatusCodes } from "../../config/HttpStatusCodes";
+import { Messages } from "../../config/message";
 
 export class ListingsController implements IListingsController {
-    private listingsService: IListingsService;
+    private _listingsService: IListingsService;
 
     constructor(listingsService: IListingsService) {
-        this.listingsService = listingsService;
+        this._listingsService = listingsService;
     }
 
     async getListingsByCategory(req: Request, res: Response): Promise<Response> {
         try {
             const { category } = req.query;
-            const listings = await this.listingsService.getListingsByCategory({ category: category as string });
-            return res.status(200).json(listings);
+            const listings = await this._listingsService.getListingsByCategory({ category: category as string });
+            return res.status(HttpStatusCodes.OK).json(listings);
         } catch (error) {
             console.error("Error fetching listings by category:", error);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.INTERNAL_SERVER_ERROR });
         }
     }
 
     async getListingById(req: Request, res: Response): Promise<Response> {
         const { listingId } = req.params;
         if (!listingId) {
-            return res.status(400).json({ error: "Listing ID is required." });
+            return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: Messages.LISTING_ID_REQUIRED });
         }
         try {
-            const listing = await this.listingsService.getListingById(listingId);
+            const listing = await this._listingsService.getListingById(listingId);
             if (!listing) {
-                return res.status(404).json({ error: "Listing not found." });
+                return res.status(HttpStatusCodes.NOT_FOUND).json({ error: Messages.LISTING_NOT_FOUND });
             }
-            return res.status(200).json(listing);
+            return res.status(HttpStatusCodes.OK).json(listing);
         } catch (error: any) {
-            return res.status(500).json({ error: error.message });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
     }
 
@@ -40,7 +42,7 @@ export class ListingsController implements IListingsController {
         try {
             const { title, description, imageSrc, category, roomCount, guestCount, location, price } = req.body;
             const userId = (req as any).user.id;
-            const listing = await this.listingsService.createListing({
+            const listing = await this._listingsService.createListing({
                 title,
                 description,
                 imageSrc,
@@ -52,68 +54,69 @@ export class ListingsController implements IListingsController {
                 userId,
                 locationValues: undefined,
             });
-            return res.status(201).json(listing);
+            return res.status(HttpStatusCodes.CREATED).json(listing);
         } catch (error: any) {
-            return res.status(500).json({ error: error.message });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
     }
+
     async updatePrice(req: Request, res: Response): Promise<Response> {
         const currentUser = (req as any).user;
         if (!currentUser) {
-          return res.status(401).json({ error: "Unauthorized" });
+            return res.status(HttpStatusCodes.UNAUTHORIZED).json({ error: Messages.UNAUTHORIZED });
         }
         const { listingId } = req.params;
         const { price } = req.body;
         if (!listingId || typeof listingId !== "string") {
-          return res.status(400).json({ error: "Invalid ID" });
+            return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: Messages.INVALID_ID });
         }
         try {
-          const result = await this.listingsService.updatePrice(listingId, currentUser.id, price);
-          return res.status(200).json(result);
+            const result = await this._listingsService.updatePrice(listingId, currentUser.id, price);
+            return res.status(HttpStatusCodes.OK).json(result);
         } catch (error: any) {
-          return res.status(error.status || 500).json({ error: error.message });
+            return res.status(error.status || HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
-      }
-    
-      async deleteListing(req: Request, res: Response): Promise<Response> {
+    }
+
+    async deleteListing(req: Request, res: Response): Promise<Response> {
         const currentUser = (req as any).user;
         if (!currentUser) {
-          return res.status(401).json({ error: "Unauthorized" });
+            return res.status(HttpStatusCodes.UNAUTHORIZED).json({ error: Messages.UNAUTHORIZED });
         }
         const { listingId } = req.params;
         if (!listingId || typeof listingId !== "string") {
-          return res.status(400).json({ error: "Invalid ID" });
+            return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: Messages.INVALID_ID });
         }
         try {
-          const result = await this.listingsService.deleteListing(listingId, currentUser.id);
-          return res.status(200).json(result);
+            const result = await this._listingsService.deleteListing(listingId, currentUser.id);
+            return res.status(HttpStatusCodes.OK).json(result);
         } catch (error: any) {
-          return res.status(error.status || 500).json({ error: error.message });
+            return res.status(error.status || HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
-      }
-    
-      async updateListing(req: Request, res: Response): Promise<Response> {
+    }
+
+    async updateListing(req: Request, res: Response): Promise<Response> {
         const currentUser = (req as any).user;
         if (!currentUser) {
-          return res.status(401).json({ error: "Unauthorized" });
+            return res.status(HttpStatusCodes.UNAUTHORIZED).json({ error: Messages.UNAUTHORIZED });
         }
         const { listingId } = req.params;
         const { category, imageSrc, title, description, price } = req.body;
         if (!listingId || typeof listingId !== "string") {
-          return res.status(400).json({ error: "Invalid listing ID" });
+            return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: Messages.INVALID_LISTING_ID });
         }
         try {
-          const result = await this.listingsService.updateListing(listingId, currentUser.id, {
-            category,
-            imageSrc,
-            title,
-            description,
-            price,
-          });
-          return res.status(200).json(result);
+            const result = await this._listingsService.updateListing(listingId, currentUser.id, {
+                category,
+                imageSrc,
+                title,
+                description,
+                price,
+            });
+            return res.status(HttpStatusCodes.OK).json(result);
         } catch (error: any) {
-          console.error("Error in updateListing:", error);
-          return res.status(error.status || 500).json({ error: error.message });
+            console.error("Error in updateListing:", error);
+            return res.status(error.status || HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
-      }
+    }
 }

@@ -1,25 +1,27 @@
 import { Request, Response } from "express";
 import { INotificationService } from "../../services/interface/Iadmin";
+import { HttpStatusCodes } from "../../config/HttpStatusCodes";
+import { Messages } from "../../config/message";
 
 export class NotificationController {
-  private notificationService: INotificationService;
+  private _notificationService: INotificationService;
 
   constructor(notificationService: INotificationService) {
-    this.notificationService = notificationService;
+    this._notificationService = notificationService;
   }
 
   async sendNotification(req: Request, res: Response): Promise<void> {
     try {
       const { userId, message, type } = req.body;
       if (!userId || !message || !type) {
-        res.status(400).json({ message: "Missing required fields" });
+        res.status(HttpStatusCodes.BAD_REQUEST).json({ message: Messages.MISSING_REQUIRED_FIELDS });
         return;
       }
-      await this.notificationService.sendNotification(userId, message, type);
-      res.status(200).json({ message: "Notification sent successfully" });
+      await this._notificationService.sendNotification(userId, message, type);
+      res.status(HttpStatusCodes.OK).json({ message: Messages.NOTIFICATION_SENT_SUCCESS });
     } catch (error) {
       console.error("Error sending notification:", error);
-      res.status(500).json({ message: "Failed to send notification" });
+      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.FAILED_TO_SEND_NOTIFICATION });
     }
   }
 }

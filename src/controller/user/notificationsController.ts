@@ -1,68 +1,81 @@
 import { Request, Response } from "express";
 import { INotificationsService } from "../../services/interface/Iuser";
 import { INotificationsController } from "../interface/IuserController";
+import { HttpStatusCodes } from "../../config/HttpStatusCodes";
+import { Messages } from "../../config/message";
 import { pusherServer } from "../../libs/pusher";
 import prisma from "../../libs/prismadb";
 
 export class NotificationsController implements INotificationsController {
-    private notificationsService: INotificationsService;
+    private _notificationsService: INotificationsService;
 
     constructor(notificationsService: INotificationsService) {
-        this.notificationsService = notificationsService;
+        this._notificationsService = notificationsService;
     }
 
     async getNotificationCount(req: Request, res: Response): Promise<Response> {
         try {
             const userId = (req as any).user.userId;
-            const count = await this.notificationsService.getNotificationCount(userId);
-            return res.status(200).json({ status: true, message: "Notification count fetched successfully", data: { count } });
+            const count = await this._notificationsService.getNotificationCount(userId);
+            return res
+                .status(HttpStatusCodes.OK)
+                .json({ status: true, message: Messages.NOTIFICATION_COUNT_FETCHED_SUCCESS, data: { count } });
         } catch (error: any) {
-            return res.status(500).json({ status: false, message: error.message });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
         }
     }
 
     async deleteNotification(req: Request, res: Response): Promise<Response> {
         try {
             const currentUser = (req as any).user;
-            if (!currentUser) return res.status(401).json({ message: "Unauthorized" });
+            if (!currentUser) return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
             const { notificationId } = req.params;
-            if (!notificationId || typeof notificationId !== "string") return res.status(400).json({ message: "Invalid ID" });
-            const notification = await this.notificationsService.deleteNotification({ notificationId, userId: currentUser.id });
-            await pusherServer.trigger(`user-${currentUser.email}-notifications`, "notification:remove", notificationId);
-            return res.status(200).json(notification);
+            if (!notificationId || typeof notificationId !== "string")
+                return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: Messages.INVALID_ID });
+            const notification = await this._notificationsService.deleteNotification({
+                notificationId,
+                userId: currentUser.id,
+            });
+            await pusherServer.trigger(
+                `user-${currentUser.email}-notifications`,
+                "notification:remove",
+                notificationId
+            );
+            return res.status(HttpStatusCodes.OK).json(notification);
         } catch (error) {
             console.error("DELETE_NOTIFICATION_ERROR", error);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.INTERNAL_SERVER_ERROR });
         }
     }
 
     async getNotifications(req: Request, res: Response): Promise<Response> {
         try {
             const currentUser = (req as any).user;
-            if (!currentUser) return res.status(401).json({ message: "Unauthorized" });
-            const notifications = await this.notificationsService.getNotifications({ userId: currentUser.id });
-            return res.status(200).json(notifications);
+            if (!currentUser) return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+            const notifications = await this._notificationsService.getNotifications({ userId: currentUser.id });
+            return res.status(HttpStatusCodes.OK).json(notifications);
         } catch (error) {
             console.error("GET_NOTIFICATIONS_ERROR", error);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.INTERNAL_SERVER_ERROR });
         }
     }
 
     async createNotification(req: Request, res: Response): Promise<Response> {
         try {
             const currentUser = (req as any).user;
-            if (!currentUser) return res.status(401).json({ message: "Unauthorized" });
+            if (!currentUser) return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
             const { userId, message, type } = req.body;
-            if (!userId || !message) return res.status(400).json({ message: "Missing required fields" });
-            const notification = await this.notificationsService.createNotification({ userId, message, type });
+            if (!userId || !message)
+                return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: Messages.MISSING_REQUIRED_FIELDS });
+            const notification = await this._notificationsService.createNotification({ userId, message, type });
             const recipient = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
             if (recipient?.email) {
                 await pusherServer.trigger(`user-${recipient.email}-notifications`, "notification:new", notification);
             }
-            return res.status(200).json(notification);
+            return res.status(HttpStatusCodes.OK).json(notification);
         } catch (error) {
             console.error("CREATE_NOTIFICATION_ERROR", error);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.INTERNAL_SERVER_ERROR });
         }
     }
 }

@@ -1,5 +1,6 @@
 import { IAuthRepository } from "../../repositories/interface/IadminRepositories";
 import { IAuthService, Admin } from "../interface/Iadmin";
+import { AdminMapper } from "../../dto/mappers";
 import jwt from "jsonwebtoken";
 
 interface AdminPayload {
@@ -13,18 +14,18 @@ const ACCESS_TOKEN_EXPIRY = "1h";
 const REFRESH_TOKEN_EXPIRY = "7d";
 
 export default class AuthService implements IAuthService {
-  private authRepository: IAuthRepository;
+  private _authRepository: IAuthRepository;
 
   constructor(authRepository: IAuthRepository) {
-    this.authRepository = authRepository;
+    this._authRepository = authRepository;
   }
 
   async findByEmail(email: string): Promise<Admin | null> {
-    return await this.authRepository.findByEmail(email);
+    return await this._authRepository.findByEmail(email);
   }
 
-  async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string } | null> {
-    const admin = await this.authRepository.findByEmail(email);
+  async login(email: string, password: string): Promise<import("../../dto/admin").AdminLoginResponseDto | null> {
+    const admin = await this._authRepository.findByEmail(email);
     console.log("Admin retrieved:", admin);
     if (!admin || password !== admin.password) {
       console.log("Login failed: Invalid credentials");
@@ -35,17 +36,19 @@ export default class AuthService implements IAuthService {
     const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
     const refreshToken = jwt.sign(payload, JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY });
 
-    await this.authRepository.updateTokens(admin.id, accessToken, refreshToken);
+    await this._authRepository.updateTokens(admin.id, accessToken, refreshToken);
     console.log("Tokens generated:", { accessToken, refreshToken });
-    return { accessToken, refreshToken };
+    
+    // Use DTO mapper to return properly formatted response
+    return AdminMapper.toAdminLoginResponseDto(admin, accessToken, refreshToken);
   }
 
-  async refreshToken(refreshToken: string): Promise<{ accessToken: string } | null> {
+  async refreshToken(refreshToken: string): Promise<import("../../dto/admin").AdminRefreshResponseDto | null> {
     try {
       const decoded = jwt.verify(refreshToken, JWT_SECRET) as AdminPayload;
       console.log("Refresh token decoded:", decoded);
 
-      const admin = await this.authRepository.findById(decoded.id);
+      const admin = await this._authRepository.findById(decoded.id);
       if (!admin) {
         console.log("No admin found for ID:", decoded.id);
         return null;
@@ -60,9 +63,11 @@ export default class AuthService implements IAuthService {
       const payload: AdminPayload = { id: admin.id, email: admin.email, role: admin.role };
       const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
 
-      await this.authRepository.updateTokens(admin.id, accessToken, refreshToken);
+      await this._authRepository.updateTokens(admin.id, accessToken, refreshToken);
       console.log("New access token issued:", accessToken);
-      return { accessToken };
+      
+      // Use DTO mapper to return properly formatted response
+      return AdminMapper.toAdminRefreshResponseDto(accessToken);
     } catch (error) {
       console.error("Error in refreshToken:", error);
       return null;

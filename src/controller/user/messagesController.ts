@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
 import { IMessagesService } from "../../services/interface/Iuser";
 import { IMessagesController } from "../interface/IuserController";
+import { HttpStatusCodes } from "../../config/HttpStatusCodes";
+import { Messages } from "../../config/message";
 import { pusherServer } from "../../libs/pusher";
 
 export class MessagesController implements IMessagesController {
-    private messagesService: IMessagesService;
+    private _messagesService: IMessagesService;
 
     constructor(messagesService: IMessagesService) {
-        this.messagesService = messagesService;
+        this._messagesService = messagesService;
     }
 
     async createMessage(req: Request, res: Response): Promise<Response> {
@@ -15,15 +17,15 @@ export class MessagesController implements IMessagesController {
             const { message, image, conversationId } = req.body;
             const currentUser = (req as any).user;
             if (!currentUser?.id || !currentUser?.email) {
-                return res.status(401).json({ message: "Unauthorized" });
+                return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
             }
-            const newMessage = await this.messagesService.createMessage({
+            const newMessage = await this._messagesService.createMessage({
                 message,
                 image,
                 conversationId,
                 senderId: currentUser.id,
             });
-            const updatedConversation = await this.messagesService.updateConversationLastMessage(
+            const updatedConversation = await this._messagesService.updateConversationLastMessage(
                 conversationId,
                 newMessage.id
             );
@@ -35,10 +37,10 @@ export class MessagesController implements IMessagesController {
                     messages: [lastMessage],
                 });
             });
-            return res.status(200).json(newMessage);
+            return res.status(HttpStatusCodes.OK).json(newMessage);
         } catch (error) {
             console.error("Error creating message:", error);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.INTERNAL_SERVER_ERROR });
         }
     }
 
@@ -47,9 +49,9 @@ export class MessagesController implements IMessagesController {
             const { conversationId } = req.params;
             const currentUser = (req as any).user;
             if (!currentUser?.id || !currentUser?.email) {
-                return res.status(401).json({ message: "Unauthorized" });
+                return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
             }
-            const updatedMessage = await this.messagesService.markMessageAsSeen({
+            const updatedMessage = await this._messagesService.markMessageAsSeen({
                 conversationId,
                 userId: currentUser.id,
                 userEmail: currentUser.email,
@@ -59,10 +61,10 @@ export class MessagesController implements IMessagesController {
                 message: [updatedMessage],
             });
             await pusherServer.trigger(conversationId, "message:update", updatedMessage);
-            return res.status(200).json(updatedMessage);
+            return res.status(HttpStatusCodes.OK).json(updatedMessage);
         } catch (error) {
             console.error("Error marking message as seen:", error);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: Messages.INTERNAL_SERVER_ERROR });
         }
     }
 }

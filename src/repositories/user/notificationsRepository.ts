@@ -1,11 +1,22 @@
-
+import { Notification, Prisma } from "@prisma/client";
 import prisma from "../../libs/prismadb";
 import { DeleteNotificationParams, GetNotificationsParams, CreateNotificationParams } from "../../services/interface/Iuser";
 import { INotificationsRepository } from "../interface/IUserRepositories";
+import { BaseRepository } from "../baseRepository";
 
-export class NotificationsRepository implements INotificationsRepository {
+export class NotificationsRepository extends BaseRepository<
+    Notification,
+    Prisma.NotificationWhereUniqueInput,
+    Prisma.NotificationWhereInput,
+    Prisma.NotificationOrderByWithRelationInput,
+    Prisma.NotificationCreateInput,
+    Prisma.NotificationUpdateInput,
+    Prisma.NotificationSelect,
+    Prisma.NotificationInclude
+> implements INotificationsRepository {
+    protected model = prisma.notification as any;
     async getNotificationCount(userId: string): Promise<number> {
-        return await prisma.notification.count({ where: { userId, isRead: false } });
+        return await this.model.count({ where: { userId, isRead: false } });
     }
 
     async deleteNotification(params: DeleteNotificationParams): Promise<any> {
@@ -13,10 +24,14 @@ export class NotificationsRepository implements INotificationsRepository {
     }
 
     async getNotifications(params: GetNotificationsParams): Promise<any[]> {
-        return await prisma.notification.findMany({ where: { userId: params.userId }, orderBy: { createdAt: "desc" } });
+        return await this.findMany({ where: { userId: params.userId } as any, orderBy: { createdAt: "desc" } as any });
     }
 
     async createNotification(params: CreateNotificationParams): Promise<any> {
-        return await prisma.notification.create({ data: { userId: params.userId, message: params.message, type: params.type || "info" } });
+        return await this.create({
+            user: { connect: { id: params.userId } },
+            message: params.message,
+            type: params.type || "info",
+        } as Prisma.NotificationCreateInput);
     }
 }

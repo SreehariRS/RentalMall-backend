@@ -1,13 +1,24 @@
 
-import { Listing, User } from "@prisma/client";
+import { Listing, Prisma, User } from "@prisma/client";
 import prisma from "../../libs/prismadb";
 import { CreateListingParams, FilterListingsParams } from "../../services/interface/Iuser";
 import { ObjectId } from "mongodb";
 import { IListingsRepository } from "../interface/IUserRepositories";
+import { BaseRepository } from "../baseRepository";
 
-export class ListingsRepository implements IListingsRepository {
+export class ListingsRepository extends BaseRepository<
+    Listing,
+    Prisma.ListingWhereUniqueInput,
+    Prisma.ListingWhereInput,
+    Prisma.ListingOrderByWithRelationInput,
+    Prisma.ListingCreateInput,
+    Prisma.ListingUpdateInput,
+    Prisma.ListingSelect,
+    Prisma.ListingInclude
+> implements IListingsRepository {
+    protected model = prisma.listing as any;
     async getListingsByCategory(params: FilterListingsParams): Promise<Listing[]> {
-        return await prisma.listing.findMany({ where: { category: params.category } });
+        return await this.findMany({ where: { category: params.category } as any });
     }
 
     async findById(id: string): Promise<(Listing & { user: User | null }) | null> {
@@ -15,20 +26,20 @@ export class ListingsRepository implements IListingsRepository {
         if (!ObjectId.isValid(id)) {
             throw new Error(`Invalid ID format: "${id}". Expected a valid MongoDB ObjectID.`);
         }
-        const listing = await prisma.listing.findUnique({
-            where: { id },
-            include: { user: true },
-        });
+        const listing = await this.findUnique(
+            { id },
+            { include: { user: true } as any }
+        );
         return listing
             ? {
-                  ...listing,
-                  createdAt: listing.createdAt,
-                  user: listing.user
+                  ...(listing as any),
+                  createdAt: (listing as any).createdAt,
+                  user: (listing as any).user
                       ? {
-                            ...listing.user,
-                            createdAt: listing.user.createdAt,
-                            updatedAt: listing.user.updatedAt,
-                            emailVerified: listing.user.emailVerified,
+                            ...(listing as any).user,
+                            createdAt: (listing as any).user.createdAt,
+                            updatedAt: (listing as any).user.updatedAt,
+                            emailVerified: (listing as any).user.emailVerified,
                         }
                       : null,
               }
@@ -36,19 +47,17 @@ export class ListingsRepository implements IListingsRepository {
     }
 
     async createListing(data: CreateListingParams): Promise<Listing> {
-        return await prisma.listing.create({
-            data: {
-                title: data.title,
-                description: data.description,
-                imageSrc: data.imageSrc,
-                category: data.category,
-                roomCount: data.roomCount,
-                guestCount: data.guestCount,
-                locationValues: data.locationValues,
-                price: data.price,
-                userId: data.userId,
-            },
-        });
+        return await this.create({
+            title: data.title,
+            description: data.description,
+            imageSrc: data.imageSrc,
+            category: data.category,
+            roomCount: data.roomCount,
+            guestCount: data.guestCount,
+            locationValues: data.locationValues as any,
+            price: data.price,
+            user: { connect: { id: data.userId } },
+        } as Prisma.ListingCreateInput);
     }
     async updatePrice(listingId: string, userId: string, price: number): Promise<{ count: number }> {
         return await prisma.listing.updateMany({
